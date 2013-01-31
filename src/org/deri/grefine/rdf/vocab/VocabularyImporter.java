@@ -95,8 +95,8 @@ public class VocabularyImporter {
 			RepositoryConnection con = repos.getConnection();
 			try {
 
-			        String queryString = CLASSES_QUERY_P1 + uri + CLASSES_QUERY_P2;
-			        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL,queryString);
+			    String queryString = CLASSES_QUERY_P1 + uri + CLASSES_QUERY_P2;
+			    TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL,queryString);
 				TupleQueryResult res = query.evaluate();
 
 				Set<String> seen = new HashSet<String>();
