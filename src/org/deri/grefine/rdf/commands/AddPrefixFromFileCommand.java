@@ -2,8 +2,7 @@ package org.deri.grefine.rdf.commands;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -17,7 +16,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.deri.grefine.rdf.app.ApplicationContext;
 import org.deri.grefine.rdf.vocab.VocabularyImporter;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSONWriter;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.sail.SailRepository;
@@ -34,7 +33,15 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+		
+   
+            Writer w = response.getWriter();
+            JSONWriter writer = new JSONWriter(w);
+		
 		try {
+			
+			System.out.println("in doPost...");
+			
 			FileItemFactory factory = new DiskFileItemFactory();
 
 			// Create a new file upload handler
@@ -42,8 +49,11 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 
 			String uri = null, prefix = null, format = null, projectId = null, filename="";
 			InputStream in = null;
+			
+			
 			@SuppressWarnings("unchecked")
 			List<FileItem> items = upload.parseRequest(request);
+			
 			for(FileItem item:items){
 				if(item.getFieldName().equals("vocab-prefix")){
 					prefix = item.getString(); 
@@ -78,31 +88,47 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 			con.add(in, "", rdfFromat);
 			con.close();
 			
-			getRdfSchema(request).addPrefix(prefix, uri);
-        	getRdfContext().getVocabularySearcher().importAndIndexVocabulary(prefix, uri, repository, projectId, new VocabularyImporter());
-        	//success
-        	PrintWriter out = response.getWriter();
-			out.print("<html><body><textarea>\n{\"code\":\"ok\"}\n</textarea></body></html>");
-			out.flush();
+			System.out.println("Getting RDF schema...");
+			getRdfSchemaForUpload(request, projectId).addPrefix(prefix, uri);
+			getRdfContext().getVocabularySearcher().importAndIndexVocabulary(prefix, uri, repository, projectId, new VocabularyImporter());
+        	        //success
+
+                        //response.setHeader("Content-Type", "application/json");
+
+                        writer.object();
+                        writer.key("code");
+                        writer.value("ok");
+                        writer.endObject();
+                    	
 		} catch (Exception e) {
-			try{
-				JSONObject o = new JSONObject();
-				o.put("code", "error");
-				o.put("message", e.getMessage());
+			
+			logger.error("Some error: " + e.getLocalizedMessage());
+			try {
+			
+				logger.info("Generating response for error....");
+				writer.object();
+                	        writer.key("code");
+                	        writer.value("error");
+                	        writer.endObject();
+                	            
+                	        writer.object();
+                	        writer.key("message");
+                	        writer.value(e.getMessage());
+                	        writer.endObject();
+			}
+			catch(JSONException e1) {
+			    System.out.println("What now??????");
+			}
+				
+			
+		}
+		finally {
+		    //response.setStatus(HttpServletResponse.SC_OK);
+		    System.out.println("Made it to here....");
+		    System.out.println(response.getContentType());
+                    w.flush();
+                    w.close();
 
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				pw.flush();
-				sw.flush();
-
-				o.put("stack", sw.toString());
-
-				response.setCharacterEncoding("UTF-8");
-				respond(response, "<html><body><textarea>\n" + o.toString() + "\n</textarea></body></html>");
-			} catch (JSONException e1) {
-	            e.printStackTrace(response.getWriter());
-	        }
 		}
 	}
     
