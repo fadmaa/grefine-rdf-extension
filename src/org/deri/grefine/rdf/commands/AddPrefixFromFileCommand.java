@@ -83,11 +83,12 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 				rdfFormat = RDFFormat.RDFXML;
 			}
 			con.add(in, "", rdfFormat);
-			con.close();
 			
 			getRdfSchemaForUpload(request, projectId).addPrefix(prefix, uri);
 			getRdfContext().getVocabularySearcher().importAndIndexVocabulary(prefix, uri, repository, projectId, new VocabularyImporter());
-        	
+			
+			con.close();
+			
 			//success
 			writer.object();
 			writer.key("code");
@@ -102,20 +103,17 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 				writer.object();
 				writer.key("code");
 				writer.value("error");
-				writer.endObject();
-				    
-				writer.object();
 				writer.key("message");
-				writer.value(e.getMessage());
+				writer.value(e.getLocalizedMessage());
 				writer.endObject();
 			}
 			catch(JSONException e1) {
-			    logger.error("There was an error while generating response.");
+			    logger.error("There was an error while generating response." + e1.getMessage());
 			    //throw new ServletException();
+			    respond(response, "{'code':'error','message':'An error occured. Check your file.'}");
 			}
 		}
 		finally {
-		    System.out.println(response.getContentType());
 			w.flush();
 			w.close();
 

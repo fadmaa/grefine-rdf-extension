@@ -355,7 +355,7 @@ public class VocabularySearcher implements IVocabularySearcher {
 			Document doc = searcher.doc(docs.scoreDocs[i].doc);
 			//TODO this needs to be changed into a more efficient impl
 			Document newdoc = new Document();
-			Iterator fieldsIter = doc.getFields().iterator();
+			Iterator<Fieldable> fieldsIter = doc.getFields().iterator();
 			while(fieldsIter.hasNext()){
 				newdoc.add((Fieldable)fieldsIter.next());
 			}
