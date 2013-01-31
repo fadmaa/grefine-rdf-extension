@@ -2,8 +2,7 @@ package org.deri.grefine.rdf.commands;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -17,7 +16,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.deri.grefine.rdf.app.ApplicationContext;
 import org.deri.grefine.rdf.vocab.VocabularyImporter;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSONWriter;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.sail.SailRepository;
@@ -34,7 +33,13 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+		
+   
+            Writer w = response.getWriter();
+            JSONWriter writer = new JSONWriter(w);
+		
 		try {
+			
 			FileItemFactory factory = new DiskFileItemFactory();
 
 			// Create a new file upload handler
@@ -42,8 +47,10 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 
 			String uri = null, prefix = null, format = null, projectId = null, filename="";
 			InputStream in = null;
+			
 			@SuppressWarnings("unchecked")
 			List<FileItem> items = upload.parseRequest(request);
+			
 			for(FileItem item:items){
 				if(item.getFieldName().equals("vocab-prefix")){
 					prefix = item.getString(); 
@@ -63,46 +70,53 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 					new ForwardChainingRDFSInferencer(new MemoryStore()));
 			repository.initialize();
 			RepositoryConnection con = repository.getConnection();
-			RDFFormat rdfFromat;
+			RDFFormat rdfFormat;
 			if(format.equals("auto-detect")){
-				rdfFromat = guessFormat(filename);
+				rdfFormat = guessFormat(filename);
 			}else if(format.equals("TTL")){
-				rdfFromat = RDFFormat.TURTLE;
+				rdfFormat = RDFFormat.TURTLE;
 			}else if(format.equals("N3")){
-				rdfFromat = RDFFormat.N3;
+				rdfFormat = RDFFormat.N3;
 			}else if(format.equals("NTRIPLE")) {
-				rdfFromat = RDFFormat.NTRIPLES;
+				rdfFormat = RDFFormat.NTRIPLES;
 			}else{
-				rdfFromat = RDFFormat.RDFXML;
+				rdfFormat = RDFFormat.RDFXML;
 			}
-			con.add(in, "", rdfFromat);
+			con.add(in, "", rdfFormat);
+			
+			getRdfSchemaForUpload(request, projectId).addPrefix(prefix, uri);
+			getRdfContext().getVocabularySearcher().importAndIndexVocabulary(prefix, uri, repository, projectId, new VocabularyImporter());
+			
 			con.close();
 			
-			getRdfSchema(request).addPrefix(prefix, uri);
-        	getRdfContext().getVocabularySearcher().importAndIndexVocabulary(prefix, uri, repository, projectId, new VocabularyImporter());
-        	//success
-        	PrintWriter out = response.getWriter();
-			out.print("<html><body><textarea>\n{\"code\":\"ok\"}\n</textarea></body></html>");
-			out.flush();
+			//success
+			writer.object();
+			writer.key("code");
+			writer.value("ok");
+			writer.endObject();
+                    	
 		} catch (Exception e) {
-			try{
-				JSONObject o = new JSONObject();
-				o.put("code", "error");
-				o.put("message", e.getMessage());
+			
+			try {
+			
+				logger.warn("Generating response for error: " + e.getLocalizedMessage());
+				writer.object();
+				writer.key("code");
+				writer.value("error");
+				writer.key("message");
+				writer.value(e.getLocalizedMessage());
+				writer.endObject();
+			}
+			catch(JSONException e1) {
+			    logger.error("There was an error while generating response." + e1.getMessage());
+			    //throw new ServletException();
+			    respond(response, "{'code':'error','message':'An error occured. Check your file.'}");
+			}
+		}
+		finally {
+			w.flush();
+			w.close();
 
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				pw.flush();
-				sw.flush();
-
-				o.put("stack", sw.toString());
-
-				response.setCharacterEncoding("UTF-8");
-				respond(response, "<html><body><textarea>\n" + o.toString() + "\n</textarea></body></html>");
-			} catch (JSONException e1) {
-	            e.printStackTrace(response.getWriter());
-	        }
 		}
 	}
     
