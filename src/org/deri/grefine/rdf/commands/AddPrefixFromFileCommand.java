@@ -83,11 +83,12 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 				rdfFormat = RDFFormat.RDFXML;
 			}
 			con.add(in, "", rdfFormat);
-			con.close();
 			
 			getRdfSchemaForUpload(request, projectId).addPrefix(prefix, uri);
 			getRdfContext().getVocabularySearcher().importAndIndexVocabulary(prefix, uri, repository, projectId, new VocabularyImporter());
-        	
+			
+			con.close();
+			
 			//success
 			writer.object();
 			writer.key("code");
@@ -115,7 +116,6 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 			}
 		}
 		finally {
-		    System.out.println(response.getContentType());
 			w.flush();
 			w.close();
 

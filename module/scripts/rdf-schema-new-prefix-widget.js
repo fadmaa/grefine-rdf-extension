@@ -46,12 +46,7 @@ NewPrefixWidget.prototype.show = function(msg,def_prefix, onDone){
     				type: "POST",
     				dataType: "json",
     				success:function(data) {
-    			        console.log("in ajaxForm success");
-    			        console.log("All good. Do stuff");
-    			        
-    		    		
-    					if(onDone){
-    						console.log("on done?");
+    			    	if(onDone){
     						onDone(name,uri);
     						DialogSystem.dismissUntil(self._level - 1);
     					}
