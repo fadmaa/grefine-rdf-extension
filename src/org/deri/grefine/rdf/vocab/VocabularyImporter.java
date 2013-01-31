@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.deri.any23.Any23;
-import org.deri.any23.extractor.rdf.RDFXMLExtractor;
 import org.deri.any23.http.HTTPClient;
-import org.deri.any23.mime.NaiveMIMETypeDetector;
 import org.deri.any23.source.DocumentSource;
 import org.deri.any23.source.HTTPDocumentSource;
 import org.deri.any23.writer.ReportingTripleHandler;
@@ -74,7 +72,7 @@ public class VocabularyImporter {
 			}else{
 				runner = new Any23();
 			}
-			runner.setHTTPUserAgent("google-refine-rdf-extension");
+			runner.setHTTPUserAgent("openrefine-rdf-extension");
 			HTTPClient client = runner.getHTTPClient();
 			DocumentSource source = new HTTPDocumentSource(client, url);
 			Repository repository = new SailRepository(
@@ -97,10 +95,12 @@ public class VocabularyImporter {
 			RepositoryConnection con = repos.getConnection();
 			try {
 
-				TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL,CLASSES_QUERY_P1 + uri + CLASSES_QUERY_P2);
+			    String queryString = CLASSES_QUERY_P1 + uri + CLASSES_QUERY_P2;
+			    TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL,queryString);
 				TupleQueryResult res = query.evaluate();
 
 				Set<String> seen = new HashSet<String>();
+				
 				while (res.hasNext()) {
 					BindingSet solution = res.next();
 					String clazzURI = solution.getValue("resource").stringValue();
