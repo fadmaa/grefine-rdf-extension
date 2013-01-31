@@ -40,8 +40,6 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 		
 		try {
 			
-			System.out.println("in doPost...");
-			
 			FileItemFactory factory = new DiskFileItemFactory();
 
 			// Create a new file upload handler
@@ -49,7 +47,6 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 
 			String uri = null, prefix = null, format = null, projectId = null, filename="";
 			InputStream in = null;
-			
 			
 			@SuppressWarnings("unchecked")
 			List<FileItem> items = upload.parseRequest(request);
@@ -73,61 +70,54 @@ public class AddPrefixFromFileCommand extends RdfCommand{
 					new ForwardChainingRDFSInferencer(new MemoryStore()));
 			repository.initialize();
 			RepositoryConnection con = repository.getConnection();
-			RDFFormat rdfFromat;
+			RDFFormat rdfFormat;
 			if(format.equals("auto-detect")){
-				rdfFromat = guessFormat(filename);
+				rdfFormat = guessFormat(filename);
 			}else if(format.equals("TTL")){
-				rdfFromat = RDFFormat.TURTLE;
+				rdfFormat = RDFFormat.TURTLE;
 			}else if(format.equals("N3")){
-				rdfFromat = RDFFormat.N3;
+				rdfFormat = RDFFormat.N3;
 			}else if(format.equals("NTRIPLE")) {
-				rdfFromat = RDFFormat.NTRIPLES;
+				rdfFormat = RDFFormat.NTRIPLES;
 			}else{
-				rdfFromat = RDFFormat.RDFXML;
+				rdfFormat = RDFFormat.RDFXML;
 			}
-			con.add(in, "", rdfFromat);
+			con.add(in, "", rdfFormat);
 			con.close();
 			
-			System.out.println("Getting RDF schema...");
 			getRdfSchemaForUpload(request, projectId).addPrefix(prefix, uri);
 			getRdfContext().getVocabularySearcher().importAndIndexVocabulary(prefix, uri, repository, projectId, new VocabularyImporter());
-        	        //success
-
-                        //response.setHeader("Content-Type", "application/json");
-
-                        writer.object();
-                        writer.key("code");
-                        writer.value("ok");
-                        writer.endObject();
+        	
+			//success
+			writer.object();
+			writer.key("code");
+			writer.value("ok");
+			writer.endObject();
                     	
 		} catch (Exception e) {
 			
-			logger.error("Some error: " + e.getLocalizedMessage());
 			try {
 			
-				logger.info("Generating response for error....");
+				logger.warn("Generating response for error: " + e.getLocalizedMessage());
 				writer.object();
-                	        writer.key("code");
-                	        writer.value("error");
-                	        writer.endObject();
-                	            
-                	        writer.object();
-                	        writer.key("message");
-                	        writer.value(e.getMessage());
-                	        writer.endObject();
+				writer.key("code");
+				writer.value("error");
+				writer.endObject();
+				    
+				writer.object();
+				writer.key("message");
+				writer.value(e.getMessage());
+				writer.endObject();
 			}
 			catch(JSONException e1) {
-			    System.out.println("What now??????");
+			    logger.error("There was an error while generating response.");
+			    //throw new ServletException();
 			}
-				
-			
 		}
 		finally {
-		    //response.setStatus(HttpServletResponse.SC_OK);
-		    System.out.println("Made it to here....");
 		    System.out.println(response.getContentType());
-                    w.flush();
-                    w.close();
+			w.flush();
+			w.close();
 
 		}
 	}
