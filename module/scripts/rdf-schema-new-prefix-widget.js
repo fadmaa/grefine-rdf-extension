@@ -4,7 +4,6 @@ function NewPrefixWidget(manager){
 
 NewPrefixWidget.prototype.show = function(msg,def_prefix, onDone){
 	var self = this;
-
 	var dialog = $(DOM.loadHTML("rdf-extension","scripts/dialogs/new-prefix-widget.html"));
 	self._elmts = DOM.bind(dialog);
 	self._level = DialogSystem.showDialog(dialog);
@@ -62,7 +61,58 @@ NewPrefixWidget.prototype.show = function(msg,def_prefix, onDone){
 
 			return false;
 		}
+    
+    var dialog = $(DOM.loadHTML("rdf-extension","scripts/dialogs/new-prefix-widget.html"));
+    self._elmts = DOM.bind(dialog);
+    self._level = DialogSystem.showDialog(dialog);
 
+    if(msg){
+    	self._elmts.message.addClass('message').html(msg);
+    }
+    
+    if(def_prefix){
+    	self._elmts.prefix.val(def_prefix);
+    	self.suggestUri(def_prefix);
+    }
+
+    self._elmts.file_upload_form.submit(function(e){
+	   e.preventDefault();
+	   
+	   	var fetchOption = self._elmts.fetching_options_table.find('input[name="vocab_fetch_method"]:checked').val();		
+	   	
+    	var name = self._elmts.prefix.val();
+    	var uri = self._elmts.uri.val();
+    	if(self._prefixesManager._hasPrefix(name)){
+    		alert('Prefix "' + name + '" is already defined');
+    		return;
+    	}
+    	
+    	var dismissBusy;
+
+    	if(fetchOption === 'file'){
+    		//prepare values
+    		$('#vocab-hidden-prefix').val(name);
+    		$('#vocab-hidden-uri').val(uri);
+    		$('#vocab-hidden-project').val(theProject.id);
+    			
+    		dismissBusy = DialogSystem.showBusy('Uploading vocabulary ');
+
+    		$(this).ajaxSubmit({
+    				
+    				url: "command/rdf-extension/upload-file-add-prefix",
+    				type: "POST",
+    				dataType: "json",
+    				success:function(data) {
+    			    	if(onDone){
+    						onDone(name,uri);
+    						DialogSystem.dismissUntil(self._level - 1);
+    					}
+    			    }
+    		});
+    		
+    		return false;
+    	}
+    	
 		dismissBusy = DialogSystem.showBusy('Trying to import vocabulary from ' + uri);
 
 		$.post("command/rdf-extension/add-prefix",
