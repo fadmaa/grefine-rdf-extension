@@ -3,11 +3,7 @@ package org.deri.grefine.rdf.vocab.imp;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
@@ -357,9 +353,9 @@ public class VocabularySearcher implements IVocabularySearcher {
 			Document doc = searcher.doc(docs.scoreDocs[i].doc);
 			//TODO this needs to be changed into a more efficient impl
 			Document newdoc = new Document();
-			Iterator<Fieldable> fieldsIter = doc.getFields().iterator();
+			Iterator<IndexableField> fieldsIter = doc.getFields().iterator();
 			while(fieldsIter.hasNext()){
-				newdoc.add((IndexableField)fieldsIter.next());
+				newdoc.add(fieldsIter.next());
 			}
 			newdoc.removeField("projectId");
 			newdoc.add(new Field("projectId",projectId,Field.Store.YES,Field.Index.NOT_ANALYZED));
