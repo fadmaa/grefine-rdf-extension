@@ -222,11 +222,19 @@ RdfSchemaAlignmentDialog.prototype._editBaseUri = function(src){
 	var elmts = DOM.bind(menu);
 	elmts.newBaseUri.val(RdfSchemaAlignment._defaultNamespace).focus().select();
 	elmts.applyButton.click(function() {
+		
+		function endsWith(str, suffix) {
+		    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+		}
+		
 		var newBaseUri = elmts.newBaseUri.val();
-		/*if(!newBaseUri || !newBaseUri.substring(7)=='http://'){
-			alert('Base URI should start with http://');
-			return;
-		}*/
+	
+		if(!endsWith(newBaseUri,"/") && !endsWith(newBaseUri,"#")) {
+			var ans = confirm("Base URI should end with a fragment identifier - either / or # .\n" + 
+					"Do you want to keep this URI anyway? It might not be displayed correctly.");
+			if(ans == false) return;
+		}
+		
         MenuSystem.dismissAll();
         self._replaceBaseUri(newBaseUri);
     });
@@ -241,7 +249,8 @@ RdfSchemaAlignmentDialog.prototype._replaceBaseUri = function(newBaseUri,doNotSa
 	if(!doNotSave){
 		$.post("command/rdf-extension/save-baseURI?" + $.param({project: theProject.id }),{baseURI:newBaseUri},function(data){
 			if (data.code === "error"){
-				alert('Error:' + data.message)
+				alert('Error:' + data.message);
+				return;
 			}else{
 				self._baseUriSpan.empty().text(newBaseUri);
 			}
@@ -249,6 +258,9 @@ RdfSchemaAlignmentDialog.prototype._replaceBaseUri = function(newBaseUri,doNotSa
 	}else{
 		self._baseUriSpan.empty().text(newBaseUri);
 	}
+	
+	//update rdf preview
+	self._previewRdf();
 };
 
 RdfSchemaAlignmentDialog.prototype.getJSON = function() {
