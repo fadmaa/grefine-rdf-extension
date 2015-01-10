@@ -18,7 +18,6 @@ import org.deri.grefine.reconcile.rdf.endpoints.QueryEndpointImpl;
 import org.deri.grefine.reconcile.rdf.executors.DumpQueryExecutor;
 import org.deri.grefine.reconcile.rdf.executors.QueryExecutor;
 import org.deri.grefine.reconcile.rdf.executors.RemoteQueryExecutor;
-import org.deri.grefine.reconcile.rdf.executors.VirtuosoRemoteQueryExecutor;
 import org.deri.grefine.reconcile.rdf.factories.BigOwlImSparqlQueryFactory;
 import org.deri.grefine.reconcile.rdf.factories.JenaTextSparqlQueryFactory;
 import org.deri.grefine.reconcile.rdf.factories.PlainSparqlQueryFactory;
@@ -95,7 +94,7 @@ public class AddServiceCommand extends AbstractAddServiceCommand{
 			queryEndpoint = new QueryEndpointImpl(queryFactory, queryExecutor);
 		}else if(type.equals("virtuoso")){
 			SparqlQueryFactory queryFactory = new VirtuosoSparqlQueryFactory();
-			QueryExecutor queryExecutor = new VirtuosoRemoteQueryExecutor(url, graph);;
+			QueryExecutor queryExecutor = new RemoteQueryExecutor(url, graph);;
 			queryEndpoint = new QueryEndpointImpl(queryFactory, queryExecutor);
 		}else if(type.equals("bigowlim")){
 			SparqlQueryFactory queryFactory = new BigOwlImSparqlQueryFactory();

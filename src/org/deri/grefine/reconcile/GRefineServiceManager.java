@@ -14,14 +14,12 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.deri.grefine.reconcile.ServiceRegistry;
 import org.deri.grefine.reconcile.model.ReconciliationService;
 import org.deri.grefine.reconcile.util.GRefineJsonUtilitiesImpl;
 import org.deri.grefine.reconcile.util.PrefixManager;
-
 import org.json.JSONException;
 
 public class GRefineServiceManager {
@@ -94,7 +92,7 @@ public class GRefineServiceManager {
 		return registry.multiReconcile(service, queries);
 	}
 	
-	public String suggestType(String serviceName, HttpServletRequest request) throws JsonGenerationException, JsonMappingException, IOException {
+	public String suggestType(String serviceName, HttpServletRequest request) throws Exception {
 		ReconciliationService service = getService(serviceName);
 		String callback = request.getParameter("callback");
 		String prefix = request.getParameter("prefix");
@@ -108,7 +106,7 @@ public class GRefineServiceManager {
 		return registry.previewType(service, typeId, callback);
 	}
 	
-	public String suggestProperty(String serviceName, HttpServletRequest request) throws JsonGenerationException, JsonMappingException, IOException {
+	public String suggestProperty(String serviceName, HttpServletRequest request) throws Exception {
 		ReconciliationService service = getService(serviceName);
 		String callback = request.getParameter("callback");
 		String prefix = request.getParameter("prefix");
@@ -123,7 +121,7 @@ public class GRefineServiceManager {
 		return registry.previewProperty(service, propertyId, callback);
 	}
 	
-	public String suggestEntity(String serviceName, HttpServletRequest request) throws JsonGenerationException, JsonMappingException, IOException {
+	public String suggestEntity(String serviceName, HttpServletRequest request) throws Exception {
 		ReconciliationService service = getService(serviceName);
 		String callback = request.getParameter("callback");
 		String prefix = request.getParameter("prefix");

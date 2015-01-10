@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class SindiceService extends AbstractReconciliationService{
@@ -65,7 +64,7 @@ public class SindiceService extends AbstractReconciliationService{
 	}
 
 	@Override
-	public ReconciliationResponse reconcile(ReconciliationRequest request) {
+	public ReconciliationResponse reconcile(ReconciliationRequest request) throws Exception {
 //		String type = (request.getTypes()!=null && request.getTypes().length>0)? (request.getTypes()[0]) : null;
 		try {
 			//Type is not pushed to Sindice anymore as Sindice does not handle full URI(e.g. http://xmlns.com/foaf/0.1/Person) for type properly
@@ -120,15 +119,7 @@ public class SindiceService extends AbstractReconciliationService{
 
 	@Override
 	public String getPreviewHtmlForResource(String resourceId) throws Exception {
-		Model model = rdfUtilities.dereferenceUri(resourceId);
-		
-		QueryEndpoint endpoint = this.queryEndpointFactory.getLarqQueryEndpoint(model);
-		Multimap<String, String> propertiesMap 	= endpoint.getResourcePropertiesMap(previewResourceCannedQuery, resourceId);
-		VelocityContext context = new VelocityContext();
-		context.put("resourceUri", resourceId);
-		context.put("propertiesMap", propertiesMap);
-		
-		return getHtmlFromTemplate("templates/resource_preview.vt", context);
+		throw new RuntimeException("forgot to add back preview for Sindice");
 	}
 
 	@Override

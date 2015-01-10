@@ -124,5 +124,12 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/lucene/lucene-sandbox/4.3.1/lucene-sandbox-4.3.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/jakarta-regexp/jakarta-regexp/1.4/jakarta-regexp-1.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenRefine"/>
-	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/simmetrics_jar_v1_6_2_d07_02_07.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-arq-2.11.1.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-core-2.11.1.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-iri-1.0.1.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-sdb-1.4.1.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-tdb-1.0.1.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-text-1.0.1.jar"/>
+	<classpathentry kind="output" path="module/MOD-INF/classes"/>
 </classpath>

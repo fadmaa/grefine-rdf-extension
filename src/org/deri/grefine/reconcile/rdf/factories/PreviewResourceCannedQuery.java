@@ -7,14 +7,13 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 
 public class PreviewResourceCannedQuery {
 
@@ -58,11 +57,11 @@ public class PreviewResourceCannedQuery {
 		return query.replaceAll("\\[\\[RESOURCE_URI\\]\\]", resourceId);
 	}
 	
-	public Multimap<String, String> wrapResourcePropertiesMapResultSet(ResultSet resultset){
+	public Multimap<String, String> wrapResourcePropertiesMapResultSet(TupleQueryResult resultset) throws QueryEvaluationException{
 		Multimap<String, String> map = LinkedHashMultimap.create();
-		List<String> vars = resultset.getResultVars();
+		List<String> vars = resultset.getBindingNames();
 		while(resultset.hasNext()){
-			QuerySolution sol = resultset.nextSolution();
+			BindingSet sol = resultset.next();
 			List<String> labels = getFirstBoundN(sol,vars,"label",1,true);
 			List<String> descriptions = getFirstBoundN(sol,vars,"desc",1,true);
 			List<String> images = getFirstBoundN(sol,vars,"img",1,false);
@@ -77,7 +76,7 @@ public class PreviewResourceCannedQuery {
 		return StringUtils.split(s, ",");
 	}
 	
-	private List<String> getFirstBoundN(QuerySolution sol, List<String> varNames, String varName, int num, boolean langAware){
+	private List<String> getFirstBoundN(BindingSet sol, List<String> varNames, String varName, int num, boolean langAware){
 		List<String> values = new ArrayList<String>(num);
 		String name, en_name;
 		int i = 0;
@@ -86,18 +85,18 @@ public class PreviewResourceCannedQuery {
 			name = varName + i;
 			en_name = prefix + name;
 			i+=1;
-			RDFNode val = sol.get(en_name);
+			Value val = sol.getValue(en_name);
 			if(val==null){
 				if(!langAware){
 					continue;
 				}
 				//if langAware, try the one without language tag
-				val = sol.get(name);
+				val = sol.getValue(name);
 				if(val==null){
 					continue;
 				}
 			}
-			values.add(getString(val));
+			values.add(val.stringValue());
 			if(values.size()==num){
 				break;
 			}
@@ -106,12 +105,4 @@ public class PreviewResourceCannedQuery {
 		return values;
 	}
 	
-	private String getString(RDFNode node){
-		if(node.canAs(Literal.class)){
-			return node.asLiteral().getString();
-		}else if (node.canAs(Resource.class)){
-			return node.asResource().getURI();
-		}
-		return node.toString();
-	}
 }

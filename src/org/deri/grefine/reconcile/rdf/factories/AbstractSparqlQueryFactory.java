@@ -11,13 +11,13 @@ import org.deri.grefine.reconcile.model.ReconciliationCandidate;
 import org.deri.grefine.reconcile.model.SearchResultItem;
 import org.deri.grefine.reconcile.util.ResultSetWrappingUtil;
 import org.deri.grefine.reconcile.util.StringUtils;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
 
 /**
  * @author fadmaa
@@ -54,26 +54,26 @@ public abstract class AbstractSparqlQueryFactory implements SparqlQueryFactory{
 	}
 	
 	@Override
-	public ImmutableList<SearchResultItem> wrapTypeSuggestResultSet(ResultSet resultSet, String prefix, int limit) {
+	public ImmutableList<SearchResultItem> wrapTypeSuggestResultSet(TupleQueryResult resultSet, String prefix, int limit) throws QueryEvaluationException {
 		return ResultSetWrappingUtil.resultSetToSearchResultListFilterDuplicates(resultSet, limit);
 	}
 	
 	@Override
-	public ImmutableList<SearchResultItem> wrapPropertySuggestResultSet(ResultSet resultSet, String prefix, int limit) {
+	public ImmutableList<SearchResultItem> wrapPropertySuggestResultSet(TupleQueryResult resultSet, String prefix, int limit) throws QueryEvaluationException {
 		return ResultSetWrappingUtil.resultSetToSearchResultListFilterDuplicates(resultSet, limit);
 	}
 
 	@Override
-	public ImmutableList<SearchResultItem> wrapEntitySearchResultSet(ResultSet resultSet, int limit) {
+	public ImmutableList<SearchResultItem> wrapEntitySearchResultSet(TupleQueryResult resultSet, int limit) throws QueryEvaluationException {
 		return ResultSetWrappingUtil.resultSetToSearchResultListFilterDuplicates(resultSet, limit);
 	}
 	
 	@Override
-	public ImmutableList<SearchResultItem> wrapSampleInstancesResultSet(ResultSet resultSet, String typeId,ImmutableList<String> searchPropertyUris, int limit) {
+	public ImmutableList<SearchResultItem> wrapSampleInstancesResultSet(TupleQueryResult resultSet, String typeId,ImmutableList<String> searchPropertyUris, int limit) throws QueryEvaluationException {
 		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
 		while(resultSet.hasNext()){
-			QuerySolution sol = resultSet.next();
-			String id = sol.getResource("entity").getURI();
+			BindingSet sol = resultSet.next();
+			String id = sol.getValue("entity").stringValue();
 			String name = getFirstNonNullLabel(sol,searchPropertyUris);
 			double score = 0;
 			results.add(new SearchResultItem(id, name, score));
@@ -81,23 +81,23 @@ public abstract class AbstractSparqlQueryFactory implements SparqlQueryFactory{
 		return ImmutableList.copyOf(results);
 	}
 
-	private String getFirstNonNullLabel(QuerySolution sol, ImmutableList<String> searchPropertyUris) {
+	private String getFirstNonNullLabel(BindingSet sol, ImmutableList<String> searchPropertyUris) {
 		for(int i=1;i<=searchPropertyUris.size();i++){
-			Literal l = sol.getLiteral("label" + i);
+			Value l = sol.getValue("label" + i);
 			if(l!=null){
-				return l.getString();
+				return l.stringValue();
 			}
 		}
 		return "";
 	}
 
 	@Override
-	public ImmutableList<String[]> wrapSampleValuesOfPropertyResultSet(ResultSet resultSet, String propertyUri, int limit) {
+	public ImmutableList<String[]> wrapSampleValuesOfPropertyResultSet(TupleQueryResult resultSet, String propertyUri, int limit) throws QueryEvaluationException {
 		return ResultSetWrappingUtil.resultSetToListOfPairs(resultSet);
 	}
 
 	@Override
-	public Multimap<String, String> wrapResourcePropertiesMapResultSet(ResultSet resultSet, String resourceId, int limit) {
+	public Multimap<String, String> wrapResourcePropertiesMapResultSet(TupleQueryResult resultSet, String resourceId, int limit) throws QueryEvaluationException {
 		return ResultSetWrappingUtil.resultSetToMultimap(resultSet);
 	}
 
@@ -108,7 +108,7 @@ public abstract class AbstractSparqlQueryFactory implements SparqlQueryFactory{
 	}
 
 	@Override
-	public Multimap<String, String> wrapTypesOfEntities(ResultSet resultSet) {
+	public Multimap<String, String> wrapTypesOfEntities(TupleQueryResult resultSet) throws QueryEvaluationException {
 		return ResultSetWrappingUtil.resultSetToMultimap(resultSet);
 	}
 
@@ -119,7 +119,7 @@ public abstract class AbstractSparqlQueryFactory implements SparqlQueryFactory{
 	}
 
 	@Override
-	public Multimap<String, String> wrapResourcePropertiesMapResultSet(PreviewResourceCannedQuery cannedQuery, ResultSet resultset) {
+	public Multimap<String, String> wrapResourcePropertiesMapResultSet(PreviewResourceCannedQuery cannedQuery, TupleQueryResult resultset) throws QueryEvaluationException {
 		return cannedQuery.wrapResourcePropertiesMapResultSet(resultset);
 	}
 
@@ -127,32 +127,33 @@ public abstract class AbstractSparqlQueryFactory implements SparqlQueryFactory{
 	 * put the ResultSet returned from SPARQL endpoint into the {@link org.deri.grefine.reconciliation.model.GRefineReconciliationResponse GRefineReconciliationResponse} <br/>
 	 * @param result
 	 * @return
+	 * @throws QueryEvaluationException 
 	 */
 	@Override
-	public List<ReconciliationCandidate> wrapReconciliationResultset(ResultSet result, String queryString, ImmutableList<String> searchPropertyUris, int limit, double matchThreshold){
+	public List<ReconciliationCandidate> wrapReconciliationResultset(TupleQueryResult result, String queryString, ImmutableList<String> searchPropertyUris, int limit, double matchThreshold) throws QueryEvaluationException{
 		List<ReconciliationCandidate> candidates = new ArrayList<ReconciliationCandidate>();
 		Set<String> seen = new HashSet<String>();
 		boolean match = false;
 		boolean moreThanOneMatchFound = false;
 		double maxScore = 0.0; boolean first = true;
 		while(result.hasNext()){
-			QuerySolution solution = result.nextSolution();
-			String entityUri = solution.getResource("entity").getURI();
+			BindingSet solution = result.next();
+			String entityUri = solution.getValue("entity").stringValue();
 			if(seen.contains(entityUri)){
 				//already seen
 				continue;
 			}
 			seen.add(entityUri);
-			String label = solution.getLiteral("label").getString();
+			String label = solution.getValue("label").stringValue();
 			//score returned by Lucene is only meaningful to compare results of the *same* query
 			//they cannot be used as percentage see: http://wiki.apache.org/lucene-java/ScoresAsPercentages
 			//they are used to weight the edit distance
-			Literal scoreWieghtLiteral = solution.getLiteral("score1");
+			org.openrdf.model.Literal scoreWieghtLiteral = (org.openrdf.model.Literal)solution.getValue("score1");
 			if(scoreWieghtLiteral!=null && first){
 				first = false;
-				maxScore = scoreWieghtLiteral.getDouble();
+				maxScore = scoreWieghtLiteral.doubleValue();
 			}
-			double scoreWeight = scoreWieghtLiteral == null? 1 : scoreWieghtLiteral.getDouble()/maxScore;
+			double scoreWeight = scoreWieghtLiteral == null? 1 : scoreWieghtLiteral.doubleValue()/maxScore;
 			double score = scoreWeight * StringUtils.getLevenshteinScore(label, queryString);
 			if(score>=matchThreshold){
 				if(match){

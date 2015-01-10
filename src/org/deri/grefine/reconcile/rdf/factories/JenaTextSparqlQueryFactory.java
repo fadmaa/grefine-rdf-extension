@@ -10,11 +10,14 @@ import org.deri.grefine.reconcile.model.ReconciliationRequestContext.PropertyCon
 import org.deri.grefine.reconcile.util.StringUtils;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.openrdf.model.Literal;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 
 import com.google.common.collect.ImmutableList;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
 
 /**
  * factories for queries understood by <a href="http://jena.sourceforge.net/ARQ/lucene-arq.html">LARQ</a>
@@ -100,11 +103,11 @@ public class JenaTextSparqlQueryFactory extends AbstractSparqlQueryFactory{
 
 	
 	@Override
-	public ImmutableList<SearchResultItem> wrapTypeSuggestResultSet(ResultSet resultSet, String prefix, int limit) {
+	public ImmutableList<SearchResultItem> wrapTypeSuggestResultSet(TupleQueryResult resultSet, String prefix, int limit) throws QueryEvaluationException {
 		List<SearchResultItem> result = new ArrayList<SearchResultItem>();
 		while(resultSet.hasNext()){
-			QuerySolution sol = resultSet.nextSolution();
-			String pUri = sol.getResource("type").getURI();
+			BindingSet sol = resultSet.next();
+			String pUri = sol.getValue("type").stringValue();
 			String label = getPreferredLabel(sol);
 			result.add(new SearchResultItem(pUri, label));
 		}
@@ -112,11 +115,11 @@ public class JenaTextSparqlQueryFactory extends AbstractSparqlQueryFactory{
 	}
 
 	@Override
-	public ImmutableList<SearchResultItem> wrapPropertySuggestResultSet(ResultSet resultSet, String prefix, int limit) {
+	public ImmutableList<SearchResultItem> wrapPropertySuggestResultSet(TupleQueryResult resultSet, String prefix, int limit) throws QueryEvaluationException {
 		List<SearchResultItem> result = new ArrayList<SearchResultItem>();
 		while(resultSet.hasNext()){
-			QuerySolution sol = resultSet.nextSolution();
-			String pUri = sol.getResource("p").getURI();
+			BindingSet sol = resultSet.next();
+			String pUri = sol.getValue("p").stringValue();
 			String label = getPreferredLabel(sol);
 			result.add(new SearchResultItem(pUri, label));
 		}
@@ -134,21 +137,21 @@ public class JenaTextSparqlQueryFactory extends AbstractSparqlQueryFactory{
 											.replace("[[LIMIT]]",String.valueOf(calculatedLimit));
 	}
 	
-	private String getPreferredLabel(QuerySolution sol){
-		Literal s1 = sol.getLiteral("score1");
-		Literal s2 = sol.getLiteral("score2");
+	private String getPreferredLabel(BindingSet sol){
+		Literal s1 = (Literal)sol.getValue("score1");
+		Literal s2 = (Literal)sol.getValue("score2");
 		if(s1!=null){
 			if(s2==null){
-				return sol.getLiteral("label1").getString();
+				return sol.getValue("label1").stringValue();
 			}else{
-				if(s1.getDouble()>s2.getDouble()){
-					return sol.getLiteral("label1").getString();
+				if(s1.doubleValue()>s2.doubleValue()){
+					return sol.getValue("label1").stringValue();
 				}else{
-					return sol.getLiteral("label2").getString();
+					return sol.getValue("label2").stringValue();
 				}
 			}
 		}else if(s2!=null){
-			return sol.getLiteral("label2").getString();
+			return sol.getValue("label2").stringValue();
 		}else{
 			return "";
 		}

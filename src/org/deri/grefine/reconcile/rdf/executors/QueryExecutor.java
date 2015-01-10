@@ -6,8 +6,7 @@ import java.io.IOException;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
-
-import com.hp.hpl.jena.query.ResultSet;
+import org.openrdf.query.TupleQueryResult;
 
 /**
  * @author fadmaa
@@ -16,7 +15,7 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public interface QueryExecutor {
 
-	public ResultSet sparql(String sparql);
+	public TupleQueryResult sparql(String sparql) throws Exception;
 	
 	public void save(String serviceId, FileOutputStream out) throws IOException;
 	public void write(JSONWriter writer)throws JSONException;

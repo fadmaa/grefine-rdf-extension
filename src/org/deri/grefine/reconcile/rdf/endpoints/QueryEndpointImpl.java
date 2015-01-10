@@ -14,12 +14,12 @@ import org.deri.grefine.reconcile.rdf.factories.PreviewResourceCannedQuery;
 import org.deri.grefine.reconcile.rdf.factories.SparqlQueryFactory;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.openrdf.query.TupleQueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.query.ResultSet;
 
 public class QueryEndpointImpl implements QueryEndpoint{
 	final static Logger logger = LoggerFactory.getLogger("QueryEndpointImpl");
@@ -32,10 +32,10 @@ public class QueryEndpointImpl implements QueryEndpoint{
 	}
 
 	@Override
-	public List<ReconciliationCandidate> reconcileEntities(ReconciliationRequest request, ImmutableList<String> searchPropertyUris, double matchThreshold) {
+	public List<ReconciliationCandidate> reconcileEntities(ReconciliationRequest request, ImmutableList<String> searchPropertyUris, double matchThreshold) throws Exception {
 		long start = System.currentTimeMillis();
 		String sparql = this.queryFactory.getReconciliationSparqlQuery(request, searchPropertyUris);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 
 		List<ReconciliationCandidate> candidates = this.queryFactory.wrapReconciliationResultset(resultSet, request.getQueryString(), searchPropertyUris, request.getLimit(), matchThreshold);
 		//if type is not specified, populate types
@@ -45,7 +45,7 @@ public class QueryEndpointImpl implements QueryEndpoint{
 				entities.add(candidate.getId());
 			}
 			String typeSparql = this.queryFactory.getTypesOfEntitiesQuery(ImmutableList.copyOf(entities));
-			ResultSet typeResultSet = this.queryExecutor.sparql(typeSparql);
+			TupleQueryResult typeResultSet = this.queryExecutor.sparql(typeSparql);
 			Multimap<String, String> typesMap = this.queryFactory.wrapTypesOfEntities(typeResultSet);
 			for(ReconciliationCandidate candidate:candidates){
 				candidate.setTypes(typesMap.get(candidate.getId()).toArray(new String[]{}));
@@ -72,60 +72,60 @@ public class QueryEndpointImpl implements QueryEndpoint{
 	}
 	
 	@Override
-	public ImmutableList<SearchResultItem> suggestType(String prefix, int limit) {
+	public ImmutableList<SearchResultItem> suggestType(String prefix, int limit) throws Exception {
 		String sparql = this.queryFactory.getTypeSuggestSparqlQuery(prefix, limit);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 		return queryFactory.wrapTypeSuggestResultSet(resultSet, prefix, limit);
 	}
 
 	@Override
-	public ImmutableList<SearchResultItem> suggestProperty(String prefix, String typeUri, int limit) {
+	public ImmutableList<SearchResultItem> suggestProperty(String prefix, String typeUri, int limit) throws Exception {
 		String sparql = this.queryFactory.getPropertySuggestSparqlQuery(prefix, typeUri, limit);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 		return queryFactory.wrapPropertySuggestResultSet(resultSet, prefix, limit);
 	}
 
 	@Override
-	public ImmutableList<SearchResultItem> suggestProperty(String prefix, int limit) {
+	public ImmutableList<SearchResultItem> suggestProperty(String prefix, int limit) throws Exception {
 		String sparql = this.queryFactory.getPropertySuggestSparqlQuery(prefix, limit);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 		return queryFactory.wrapPropertySuggestResultSet(resultSet, prefix, limit);
 	}
 
 	
 	@Override
-	public ImmutableList<SearchResultItem> getSampleInstances(String typeUri, ImmutableList<String> searchPropertyUris, int limit) {
+	public ImmutableList<SearchResultItem> getSampleInstances(String typeUri, ImmutableList<String> searchPropertyUris, int limit) throws Exception {
 		String sparql = this.queryFactory.getSampleInstancesSparqlQuery(typeUri, searchPropertyUris, limit);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 		return this.queryFactory.wrapSampleInstancesResultSet(resultSet, typeUri, searchPropertyUris, limit);
 	}
 	
 	@Override
-	public ImmutableList<String[]> getSampleValuesOfProperty(String propertyUri, int limit) {
+	public ImmutableList<String[]> getSampleValuesOfProperty(String propertyUri, int limit) throws Exception {
 		String sparql = this.queryFactory.getSampleValuesOfPropertySparqlQuery(propertyUri, limit);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 		return this.queryFactory.wrapSampleValuesOfPropertyResultSet(resultSet, propertyUri, limit);
 	}
 
 	@Override
-	public Multimap<String, String> getResourcePropertiesMap(String resourceUri, int limit) {
+	public Multimap<String, String> getResourcePropertiesMap(String resourceUri, int limit) throws Exception {
 		String sparql = this.queryFactory.getResourcePropertiesMapSparqlQuery(resourceUri, limit);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 		return this.queryFactory.wrapResourcePropertiesMapResultSet(resultSet, resourceUri, limit);
 	}
 
 	
 	@Override
-	public Multimap<String, String> getResourcePropertiesMap(PreviewResourceCannedQuery cannedQuery, String resourceUri) {
+	public Multimap<String, String> getResourcePropertiesMap(PreviewResourceCannedQuery cannedQuery, String resourceUri) throws Exception {
 		String sparql = this.queryFactory.getResourcePropertiesMapSparqlQuery(cannedQuery,resourceUri);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 		return this.queryFactory.wrapResourcePropertiesMapResultSet(cannedQuery, resultSet);
 	}
 
 	@Override
-	public ImmutableList<SearchResultItem> searchForEntities(String prefix, ImmutableList<String> searchPropertyUris, int limit) {
+	public ImmutableList<SearchResultItem> searchForEntities(String prefix, ImmutableList<String> searchPropertyUris, int limit) throws Exception {
 		String sparql = this.queryFactory.getEntitySearchSparqlQuery(prefix, searchPropertyUris, limit);
-		ResultSet resultSet = this.queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = this.queryExecutor.sparql(sparql);
 		return this.queryFactory.wrapEntitySearchResultSet(resultSet, limit);
 	}
 	

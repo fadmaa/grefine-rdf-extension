@@ -10,6 +10,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.openrdf.query.TupleQueryResult;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.DatasetFactory;
@@ -69,15 +70,12 @@ public class DumpQueryExecutor implements QueryExecutor {
 	}
 	
 	@Override
-	public ResultSet sparql(String sparql) {
+	public TupleQueryResult sparql(String sparql) {
 		if(!loaded){
 			throw new RuntimeException("Model is not loaded");
 		}
 		//this.index.begin(ReadWrite.READ) ;
-		Query query = QueryFactory.create(sparql, Syntax.syntaxSPARQL_11);
-		QueryExecution qExec = QueryExecutionFactory.create(query, this.index);
-		ResultSet result =  qExec.execSelect();
-		return result;
+		throw new RuntimeException("forgot to add back support for Dump RDF reconsiliation services");
 	}
 	
 	

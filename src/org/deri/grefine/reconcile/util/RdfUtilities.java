@@ -1,7 +1,7 @@
 package org.deri.grefine.reconcile.util;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.openrdf.repository.Repository;
 
 public interface RdfUtilities {
-	public Model dereferenceUri(String uri);
+	public Repository dereferenceUri(String uri);
 }

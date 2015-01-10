@@ -6,19 +6,18 @@ import java.util.List;
 import java.util.Set;
 
 import org.deri.grefine.reconcile.model.SearchResultItem;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedHashMultimap;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ResultSetWrappingUtil {
 
-	public static ImmutableList<SearchResultItem> resultSetToSearchResultList(ResultSet resultSet){
-		List<String> varNames = resultSet.getResultVars();
+	public static ImmutableList<SearchResultItem> resultSetToSearchResultList(TupleQueryResult resultSet) throws QueryEvaluationException{
+		List<String> varNames = resultSet.getBindingNames();
 		String idVar = varNames.get(0);
 		String labelVar = varNames.get(1);
 		String scoreVar = null;
@@ -27,13 +26,13 @@ public class ResultSetWrappingUtil {
 		}
 		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
 		while(resultSet.hasNext()){
-			QuerySolution sol = resultSet.next();
-			Literal nameLiteral = sol.getLiteral(labelVar);
-			String name = nameLiteral==null?"":nameLiteral.getString();
-			String id = sol.getResource(idVar).getURI();
+			BindingSet sol = resultSet.next();
+			Value nameLiteral = sol.getValue(labelVar);
+			String name = nameLiteral==null?"":nameLiteral.stringValue();
+			String id = sol.getValue(idVar).stringValue();
 			double score = 0;
 			if(scoreVar!=null){
-				score = sol.getLiteral(scoreVar).getDouble();
+				score = ((org.openrdf.model.Literal)sol.getValue(scoreVar)).doubleValue();
 			}
 			
 			results.add(new SearchResultItem(id, name, score));
@@ -41,8 +40,8 @@ public class ResultSetWrappingUtil {
 		return ImmutableList.copyOf(results);
 	}
 	
-	public static ImmutableList<SearchResultItem> resultSetToSearchResultListFilterDuplicates(ResultSet resultSet, int limit){
-		List<String> varNames = resultSet.getResultVars();
+	public static ImmutableList<SearchResultItem> resultSetToSearchResultListFilterDuplicates(TupleQueryResult resultSet, int limit) throws QueryEvaluationException{
+		List<String> varNames = resultSet.getBindingNames();
 		String idVar = varNames.get(0);
 		String labelVar = varNames.get(1);
 		String scoreVar = null;
@@ -52,17 +51,17 @@ public class ResultSetWrappingUtil {
 		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
 		Set<String> seen = new HashSet<String>();
 		while(resultSet.hasNext()){
-			QuerySolution sol = resultSet.next();
-			String id = sol.getResource(idVar).getURI();
+			BindingSet sol = resultSet.next();
+			String id = sol.getValue(idVar).stringValue();
 			if(seen.contains(id)){
 				continue;
 			}
 			seen.add(id);
-			Literal nameLiteral = sol.getLiteral(labelVar);
-			String name = nameLiteral==null?"":nameLiteral.getString();
+			Value nameLiteral = sol.getValue(labelVar);
+			String name = nameLiteral==null?"":nameLiteral.stringValue();
 			double score = 0;
 			if(scoreVar!=null){
-				score = sol.getLiteral(scoreVar).getDouble();
+				score = ((org.openrdf.model.Literal)sol.getValue(scoreVar)).doubleValue();
 			}
 			
 			results.add(new SearchResultItem(id, name, score));
@@ -79,55 +78,46 @@ public class ResultSetWrappingUtil {
 	 * @param limit number of unique keys to include in the result
 	 * @return LinkedHashMultimap keeps the order of key input, so order in the result set is retained
 	 * the first variable in resultSet solutions is the key to the map ,the second is the value
+	 * @throws QueryEvaluationException 
 	 */
-	public static LinkedHashMultimap<String, String> resultSetToMultimap(ResultSet resultSet){
+	public static LinkedHashMultimap<String, String> resultSetToMultimap(TupleQueryResult resultSet) throws QueryEvaluationException{
 		LinkedHashMultimap<String,String> map = LinkedHashMultimap.create();
-		List<String> varNames = resultSet.getResultVars();
+		List<String> varNames = resultSet.getBindingNames();
 		if(varNames.size()!=2){
 			throw new RuntimeException("resultSetToMultimap only accepts a resultset with exactly two variables in the solution");
 		}
 		String keyVar = varNames.get(0);
 		String valVar = varNames.get(1);
 		while(resultSet.hasNext()){
-			QuerySolution sol = resultSet.next();
+			BindingSet sol = resultSet.next();
 			
-			String key = sol.getResource(keyVar).getURI();
-			RDFNode valNode = sol.get(valVar);
-			String val = valNode.canAs(Resource.class)?valNode.as(Resource.class).getURI():valNode.asLiteral().getString();
-			/*if(map.keySet().size()==limit && !map.keySet().contains(key)){
-				break;
-			}*/
+			String key = sol.getValue(keyVar).stringValue();
+			String val = sol.getValue(valVar).stringValue();
 			map.put(key, val);
 		}
 		return map;
 	}
 	
-	public static List<String> resultSetToList(ResultSet resultset, String varName){
+	public static List<String> resultSetToList(TupleQueryResult resultset, String varName) throws QueryEvaluationException{
 		List<String> result = new ArrayList<String>();
 		while(resultset.hasNext()){
-			QuerySolution sol = resultset.next();
-			String uri = sol.getResource(varName).getURI();
+			BindingSet sol = resultset.next();
+			String uri = sol.getValue(varName).stringValue();
 			result.add(uri);
 		}
 		return result;
 	}
 	
-	public static ImmutableList<String[]> resultSetToListOfPairs(ResultSet resultset){
-		List<String> varNames = resultset.getResultVars();
+	public static ImmutableList<String[]> resultSetToListOfPairs(TupleQueryResult resultset) throws QueryEvaluationException{
+		List<String> varNames = resultset.getBindingNames();
 		String var1 = varNames.get(0);
 		String var2 = varNames.get(1);
 		List<String[]> result = new ArrayList<String[]>();
 		while(resultset.hasNext()){
-			QuerySolution sol = resultset.next();
-			String s = sol.getResource(var1).getURI();
-			RDFNode object = sol.get(var2);
-			/*String o;
-			if(object.canAs(Resource.class)){
-				o = object.asResource().getURI();
-			}else{
-				o = object.asLiteral().getString();
-			}*/
-			result.add(new String[]{s,object.toString()});
+			BindingSet sol = resultset.next();
+			String s = sol.getValue(var1).stringValue();
+			String o = sol.getValue(var2).stringValue();
+			result.add(new String[]{s,o});
 		}
 		return ImmutableList.copyOf(result);
 	}

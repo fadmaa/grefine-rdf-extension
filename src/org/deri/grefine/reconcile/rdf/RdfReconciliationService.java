@@ -65,23 +65,23 @@ public class RdfReconciliationService extends AbstractReconciliationService{
 	}
 	
 	@Override
-	public ReconciliationResponse reconcile(ReconciliationRequest request) {
+	public ReconciliationResponse reconcile(ReconciliationRequest request) throws Exception {
 		List<ReconciliationCandidate> candidates = queryEndpoint.reconcileEntities(request, searchPropertyUris, matchThreshold);
 		return wrapCandidates(candidates);
 	}
 	
 	@Override
-	public ImmutableList<SearchResultItem> suggestType(String prefix) {
+	public ImmutableList<SearchResultItem> suggestType(String prefix) throws Exception {
 		return this.queryEndpoint.suggestType(prefix, limitForSuggestion);
 	}
 	
 	@Override
-	public ImmutableList<SearchResultItem> suggestProperty(String prefix) {
+	public ImmutableList<SearchResultItem> suggestProperty(String prefix) throws Exception {
 		return this.queryEndpoint.suggestProperty(prefix, limitForSuggestion);
 	}
 	
 	@Override
-	public ImmutableList<SearchResultItem> suggestProperty(String prefix, String subjectTypeUri) {
+	public ImmutableList<SearchResultItem> suggestProperty(String prefix, String subjectTypeUri) throws Exception {
 		return this.queryEndpoint.suggestProperty(prefix, subjectTypeUri, limitForSuggestion);
 	}
 	
@@ -117,7 +117,7 @@ public class RdfReconciliationService extends AbstractReconciliationService{
 	}
 	
 	@Override
-	public ImmutableList<SearchResultItem> suggestEntity(String prefix) {
+	public ImmutableList<SearchResultItem> suggestEntity(String prefix) throws Exception {
 		return this.queryEndpoint.searchForEntities(prefix, searchPropertyUris, limitForSuggestion);
 	}
 

@@ -7,10 +7,11 @@ import org.deri.grefine.reconcile.model.ReconciliationRequest;
 import org.deri.grefine.reconcile.model.SearchResultItem;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * @author fadmaa
@@ -33,8 +34,9 @@ public interface SparqlQueryFactory {
 	 * @param limit number of result items to wrap as the resultset might contain more
 	 * @param matchThreshold minimum score to consider a candidate as a match
 	 * @return list of candidates <em>ordered according to the score descendingly</em>
+	 * @throws QueryEvaluationException 
 	 */
-	public List<ReconciliationCandidate> wrapReconciliationResultset(ResultSet resultSet, String queryString, ImmutableList<String> searchPropertyUris, int limit, double matchThreshold);
+	public List<ReconciliationCandidate> wrapReconciliationResultset(TupleQueryResult resultSet, String queryString, ImmutableList<String> searchPropertyUris, int limit, double matchThreshold) throws QueryEvaluationException;
 	
 	
 	/**
@@ -43,18 +45,18 @@ public interface SparqlQueryFactory {
 	 * @return sparql query for type autocomplete i.e. given this prefix give me a query to retrieve relevant classes 
 	 */
 	public String getTypeSuggestSparqlQuery(String prefix, int limit);
-	public ImmutableList<SearchResultItem> wrapTypeSuggestResultSet(ResultSet resultSet, String prefix, int limit); 
+	public ImmutableList<SearchResultItem> wrapTypeSuggestResultSet(TupleQueryResult resultSet, String prefix, int limit) throws QueryEvaluationException; 
 	
 	public String getTypesOfEntitiesQuery(ImmutableList<String> entityUris);
-	public Multimap<String, String> wrapTypesOfEntities(ResultSet resultSet);
+	public Multimap<String, String> wrapTypesOfEntities(TupleQueryResult resultSet) throws QueryEvaluationException;
 	
 	public String getResourcePropertiesMapSparqlQuery(String resourceId, int limit);
-	public Multimap<String, String> wrapResourcePropertiesMapResultSet(ResultSet resultSet, String resourceId, int limit);
+	public Multimap<String, String> wrapResourcePropertiesMapResultSet(TupleQueryResult resultSet, String resourceId, int limit) throws QueryEvaluationException;
 	public String getResourcePropertiesMapSparqlQuery(PreviewResourceCannedQuery cannedQuery, String resourceId);
-	public Multimap<String, String> wrapResourcePropertiesMapResultSet(PreviewResourceCannedQuery cannedQuery, ResultSet resultset);
+	public Multimap<String, String> wrapResourcePropertiesMapResultSet(PreviewResourceCannedQuery cannedQuery, TupleQueryResult resultset) throws QueryEvaluationException;
 	
 	public String getSampleInstancesSparqlQuery(String typeId, ImmutableList<String> searchPropertyUris, int limit);
-	public ImmutableList<SearchResultItem> wrapSampleInstancesResultSet(ResultSet resultSet, String typeId, ImmutableList<String> searchPropertyUris, int limit); 
+	public ImmutableList<SearchResultItem> wrapSampleInstancesResultSet(TupleQueryResult resultSet, String typeId, ImmutableList<String> searchPropertyUris, int limit) throws QueryEvaluationException; 
 	
 	public String getSampleValuesOfPropertySparqlQuery(String propertyUri, int limit);
 	/**
@@ -62,15 +64,16 @@ public interface SparqlQueryFactory {
 	 * @param propertyUri
 	 * @param limit
 	 * @return List of array of strings. each array is of length 2... subject then object
+	 * @throws QueryEvaluationException 
 	 */
-	public ImmutableList<String[]> wrapSampleValuesOfPropertyResultSet(ResultSet resultSet, String propertyUri, int limit);
+	public ImmutableList<String[]> wrapSampleValuesOfPropertyResultSet(TupleQueryResult resultSet, String propertyUri, int limit) throws QueryEvaluationException;
 	
 	public String getPropertySuggestSparqlQuery(String prefix, String typeUri, int limit);
 	public String getPropertySuggestSparqlQuery(String prefix, int limit);
-	public ImmutableList<SearchResultItem> wrapPropertySuggestResultSet(ResultSet resultSet, String prefix, int limit);
+	public ImmutableList<SearchResultItem> wrapPropertySuggestResultSet(TupleQueryResult resultSet, String prefix, int limit) throws QueryEvaluationException;
 	
 	public String getEntitySearchSparqlQuery(String prefix ,ImmutableList<String> searchPropertyUris, int limit);
-	public ImmutableList<SearchResultItem> wrapEntitySearchResultSet(ResultSet resultSet, int limit);
+	public ImmutableList<SearchResultItem> wrapEntitySearchResultSet(TupleQueryResult resultSet, int limit) throws QueryEvaluationException;
 	
 	public void write(JSONWriter writer)throws JSONException;
 }

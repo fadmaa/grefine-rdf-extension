@@ -15,12 +15,13 @@ import org.deri.grefine.reconcile.rdf.factories.JenaTextSparqlQueryFactory.Score
 import org.deri.grefine.reconcile.util.StringUtils;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 
 import com.google.common.collect.ImmutableList;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Resource;
 
 public class PlainSparqlQueryFactory extends AbstractSparqlQueryFactory{
 
@@ -40,15 +41,15 @@ public class PlainSparqlQueryFactory extends AbstractSparqlQueryFactory{
 	}
 
 	@Override
-	public List<ReconciliationCandidate> wrapReconciliationResultset(ResultSet resultSet, String queryString, ImmutableList<String> searchPropertyUris, int limit, double matchThreshold) {
+	public List<ReconciliationCandidate> wrapReconciliationResultset(TupleQueryResult resultSet, String queryString, ImmutableList<String> searchPropertyUris, int limit, double matchThreshold) throws QueryEvaluationException {
 		List<ReconciliationCandidate> candidates = new ArrayList<ReconciliationCandidate>();
 		boolean match = false;
 		boolean moreThanOneMatch = false;
 		Set<String> seen = new HashSet<String>();
 		while(resultSet.hasNext()){
-			QuerySolution solution = resultSet.nextSolution();
-			Resource entity = solution.getResource("entity");
-			String entityUri = entity.getURI();
+			BindingSet solution = resultSet.next();
+			Value entity = solution.getValue("entity");
+			String entityUri = entity.stringValue();
 			if(seen.contains(entityUri)){
 				//already seen
 				continue;
@@ -62,7 +63,7 @@ public class PlainSparqlQueryFactory extends AbstractSparqlQueryFactory{
 					match = true;
 				}
 			}
-			ReconciliationCandidate candidate = new ReconciliationCandidate(entity.getURI(), scoredLabel.label, new String[] {}, scoredLabel.score,match);
+			ReconciliationCandidate candidate = new ReconciliationCandidate(entity.stringValue(), scoredLabel.label, new String[] {}, scoredLabel.score,match);
 			
 			candidates.add(candidate);
 		}
@@ -107,12 +108,12 @@ public class PlainSparqlQueryFactory extends AbstractSparqlQueryFactory{
 	
 
 	@Override
-	public ImmutableList<SearchResultItem> wrapTypeSuggestResultSet(ResultSet resultSet, String prefix, int limit) {
+	public ImmutableList<SearchResultItem> wrapTypeSuggestResultSet(TupleQueryResult resultSet, String prefix, int limit) throws QueryEvaluationException {
 		List<SearchResultItem> items = new ArrayList<SearchResultItem>();
 		while(resultSet.hasNext()){
-			QuerySolution solution = resultSet.nextSolution();
-			String type = solution.getResource("type").getURI();
-			String label = solution.getLiteral("label").getString();
+			BindingSet solution = resultSet.next();
+			String type = solution.getValue("type").stringValue();
+			String label = solution.getValue("label").stringValue();
 			double score = StringUtils.getLevenshteinScore(label, prefix);
 			items.add(new SearchResultItem(type, label, score));
 		}
@@ -128,12 +129,12 @@ public class PlainSparqlQueryFactory extends AbstractSparqlQueryFactory{
 		return ImmutableList.copyOf(items);
 	}
 
-	public List<ReconciliationCandidate> wrapResultset(ResultSet resultSet,String queryString, double matchThreshold){
+	public List<ReconciliationCandidate> wrapResultset(TupleQueryResult resultSet,String queryString, double matchThreshold) throws QueryEvaluationException{
 		List<ReconciliationCandidate> candidates = new ArrayList<ReconciliationCandidate>();
 		while(resultSet.hasNext()){
-			QuerySolution solution = resultSet.nextSolution();
-			Resource entity = solution.getResource("entity");
-			ReconciliationCandidate candidate = new ReconciliationCandidate(entity.getURI(), queryString, new String[] {}, 1.0d,true);
+			BindingSet solution = resultSet.next();
+			Value entity = solution.getValue("entity");
+			ReconciliationCandidate candidate = new ReconciliationCandidate(entity.stringValue(), queryString, new String[] {}, 1.0d,true);
 			
 			candidates.add(candidate);
 		}
@@ -195,17 +196,17 @@ public class PlainSparqlQueryFactory extends AbstractSparqlQueryFactory{
 	 * @param searchPropertyUris
 	 * @return the best label... which is the one with the best score
 	 */
-	private ScoredLabel getPreferredLabel(QuerySolution solution, String queryString, ImmutableList<String> searchPropertyUris){
+	private ScoredLabel getPreferredLabel(BindingSet solution, String queryString, ImmutableList<String> searchPropertyUris){
 		double maxScore = -1d;
 		String bestLabel = "";
 		for(int i=1; i<=searchPropertyUris.size(); i++){
-			Literal label = solution.getLiteral("label" + i);
+			Literal label = (Literal) solution.getValue("label" + i);
 			double score;
 			if(label!=null){
-				score = StringUtils.getLevenshteinScore(label.getString(), queryString);
+				score = StringUtils.getLevenshteinScore(label.stringValue(), queryString);
 				if(score>maxScore){
 					maxScore = score;
-					bestLabel = label.getString();
+					bestLabel = label.stringValue();
 				}
 			}
 		}

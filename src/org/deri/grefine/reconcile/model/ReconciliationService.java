@@ -26,8 +26,9 @@ public interface ReconciliationService{
 	 * reconcile a single reconciliation request from Google Refine (single-query mode)
 	 * @param request
 	 * @return
+	 * @throws Exception 
 	 */
-	public ReconciliationResponse reconcile(ReconciliationRequest request);
+	public ReconciliationResponse reconcile(ReconciliationRequest request) throws Exception;
 	
 	/**
 	 * reconcile a map of queries (multi-query mode)
@@ -42,15 +43,17 @@ public interface ReconciliationService{
 	 * used for autocomplete
 	 * @param prefix the query string 
 	 * @return ranked list of types matching the prefix
+	 * @throws Exception 
 	 */
-	public ImmutableList<SearchResultItem> suggestType(String prefix);
+	public ImmutableList<SearchResultItem> suggestType(String prefix) throws Exception;
 	
 	/**
 	 * used for autocomplete
 	 * @param prefix the query string 
 	 * @return ranked list of properties matching the prefix
+	 * @throws Exception 
 	 */
-	public ImmutableList<SearchResultItem> suggestProperty(String prefix);
+	public ImmutableList<SearchResultItem> suggestProperty(String prefix) throws Exception;
 	
 	/**
 	 * used for autocomplete
@@ -58,8 +61,9 @@ public interface ReconciliationService{
 	 * @param prefix the query string 
 	 * @param subjectTypeId the ID of the 
 	 * @return ranked list of properties matching the prefix and have a subject of type subjectTypeId
+	 * @throws Exception 
 	 */
-	public ImmutableList<SearchResultItem> suggestProperty(String prefix, String subjectTypeId);
+	public ImmutableList<SearchResultItem> suggestProperty(String prefix, String subjectTypeId) throws Exception;
 	
 	
 	/**
@@ -87,8 +91,9 @@ public interface ReconciliationService{
 	 * used for autocomplete
 	 * @param prefix the query string 
 	 * @return ranked list of entities matching the prefix
+	 * @throws Exception 
 	 */
-	public ImmutableList<SearchResultItem> suggestEntity(String prefix);
+	public ImmutableList<SearchResultItem> suggestEntity(String prefix) throws Exception;
 	
 	/**
 	 * save the data if any. this method should only save the data of the service not its metadata. metadata is id, name and other configuration

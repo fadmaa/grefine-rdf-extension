@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.deri.grefine.reconcile.model.ReconciliationRequest;
@@ -31,7 +30,6 @@ import org.deri.grefine.reconcile.rdf.endpoints.QueryEndpointImpl;
 import org.deri.grefine.reconcile.rdf.executors.DumpQueryExecutor;
 import org.deri.grefine.reconcile.rdf.executors.QueryExecutor;
 import org.deri.grefine.reconcile.rdf.executors.RemoteQueryExecutor;
-import org.deri.grefine.reconcile.rdf.executors.VirtuosoRemoteQueryExecutor;
 import org.deri.grefine.reconcile.rdf.factories.BigOwlImSparqlQueryFactory;
 import org.deri.grefine.reconcile.rdf.factories.JenaTextSparqlQueryFactory;
 import org.deri.grefine.reconcile.rdf.factories.PlainSparqlQueryFactory;
@@ -40,7 +38,6 @@ import org.deri.grefine.reconcile.rdf.factories.VirtuosoSparqlQueryFactory;
 import org.deri.grefine.reconcile.sindice.SindiceService;
 import org.deri.grefine.reconcile.util.GRefineJsonUtilities;
 import org.deri.grefine.reconcile.util.PrefixManager;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -119,7 +116,7 @@ public class ServiceRegistry {
 		return response;
 	}
 	
-	public String suggestType(ReconciliationService service,String prefix,String callback) throws JsonGenerationException, JsonMappingException, IOException {
+	public String suggestType(ReconciliationService service,String prefix,String callback) throws Exception {
 		ImmutableList<SearchResultItem> results = service.suggestType(prefix);
 		return grefineJsonUtilities.getJsonP(callback, grefineJsonUtilities.jsonizeSearchResult(results, prefix));
 	}
@@ -143,7 +140,7 @@ public class ServiceRegistry {
 	}
 
 	
-	public String suggestProperty(ReconciliationService service, String typeId, String prefix, String callback) throws JsonGenerationException, JsonMappingException, IOException {
+	public String suggestProperty(ReconciliationService service, String typeId, String prefix, String callback) throws Exception {
 		ImmutableList<SearchResultItem> results;
 		if(typeId==null || typeId.isEmpty()){
 			results = service.suggestProperty(prefix);
@@ -153,7 +150,7 @@ public class ServiceRegistry {
 		return grefineJsonUtilities.getJsonP(callback, grefineJsonUtilities.jsonizeSearchResult(results, prefix));
 	}
 	
-	public String suggestEntity(ReconciliationService service,String prefix, String callback) throws JsonGenerationException, JsonMappingException, IOException {
+	public String suggestEntity(ReconciliationService service,String prefix, String callback) throws Exception {
 		ImmutableList<SearchResultItem> results = service.suggestEntity(prefix);
 		return grefineJsonUtilities.getJsonP(callback, grefineJsonUtilities.jsonizeSearchResult(results, prefix));
 	}
@@ -254,12 +251,9 @@ public class ServiceRegistry {
 			if(jsonObject.has("default-graph-uri")){
 				graph = jsonObject.getString("default-graph-uri");
 			}
-			if(type.equals("remote-virtuoso")){
-				return new VirtuosoRemoteQueryExecutor(url, graph);
-			}else{
-				//plain
-				return new RemoteQueryExecutor(url, graph);
-			}
+			
+			return new RemoteQueryExecutor(url, graph);
+			
 		}
 	}
 	

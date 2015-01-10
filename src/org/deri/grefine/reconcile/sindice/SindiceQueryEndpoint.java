@@ -8,11 +8,11 @@ import org.deri.grefine.reconcile.model.ReconciliationRequest;
 import org.deri.grefine.reconcile.rdf.executors.DumpQueryExecutor;
 import org.deri.grefine.reconcile.rdf.executors.QueryExecutor;
 import org.deri.grefine.reconcile.rdf.factories.SparqlQueryFactory;
+import org.openrdf.query.TupleQueryResult;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class SindiceQueryEndpoint {
@@ -23,7 +23,7 @@ public class SindiceQueryEndpoint {
 		this.queryFactory = factory;
 	}
 	
-	public boolean hasResult(Model model, String queryString, ImmutableList<String> searchPropertyUris, int limit) {
+	public boolean hasResult(Model model, String queryString, ImmutableList<String> searchPropertyUris, int limit) throws Exception {
 		//reconcile then get types for each element in the reconciliation result assure that order is preserved
 		ReconciliationRequest request = new ReconciliationRequest(queryString, limit);
 		QueryExecutor queryExecutor = new DumpQueryExecutor(model);
@@ -31,7 +31,7 @@ public class SindiceQueryEndpoint {
 		return ! candidates.isEmpty();
 	}
 	
-	public LinkedHashMultimap<String, String> guessType(Model model, String queryString, ImmutableList<String> searchPropertyUris, int limit) {
+	public LinkedHashMultimap<String, String> guessType(Model model, String queryString, ImmutableList<String> searchPropertyUris, int limit) throws Exception {
 		//reconcile then get types for each element in the reconciliation result assure that order is preserved
 		ReconciliationRequest request = new ReconciliationRequest(queryString, limit);
 		QueryExecutor queryExecutor = new DumpQueryExecutor(model);
@@ -45,7 +45,7 @@ public class SindiceQueryEndpoint {
 			return LinkedHashMultimap.create();
 		}
 		String sparql = this.queryFactory.getTypesOfEntitiesQuery(ImmutableList.copyOf(entities));
-		ResultSet resultSet = queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = queryExecutor.sparql(sparql);
 		Multimap<String, String> typesMap = this.queryFactory.wrapTypesOfEntities(resultSet);
 		//order
 		LinkedHashMultimap<String, String> result = LinkedHashMultimap.create();
@@ -55,9 +55,9 @@ public class SindiceQueryEndpoint {
 		return result;
 	}
 	
-	private List<ReconciliationCandidate> reconcileEntities(QueryExecutor queryExecutor, ReconciliationRequest request, ImmutableList<String> searchPropertyUris, double matchThreshold) {
+	private List<ReconciliationCandidate> reconcileEntities(QueryExecutor queryExecutor, ReconciliationRequest request, ImmutableList<String> searchPropertyUris, double matchThreshold) throws Exception {
 		String sparql = this.queryFactory.getReconciliationSparqlQuery(request, searchPropertyUris);
-		ResultSet resultSet = queryExecutor.sparql(sparql);
+		TupleQueryResult resultSet = queryExecutor.sparql(sparql);
 		List<ReconciliationCandidate> candidates = this.queryFactory.wrapReconciliationResultset(resultSet, request.getQueryString(), searchPropertyUris, request.getLimit(), matchThreshold);
 		return candidates;
 	}

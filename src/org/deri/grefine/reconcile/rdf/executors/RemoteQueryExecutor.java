@@ -6,10 +6,15 @@ import java.io.IOException;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
-
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.ResultSet;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.sparql.SPARQLRepository;
 
 /**
  * @author fadmaa
@@ -25,15 +30,15 @@ public class RemoteQueryExecutor implements QueryExecutor{
 	}
 
 	@Override
-	public ResultSet sparql(String sparql) {
-		QueryExecution qExec;
-		if(defaultGraphUri==null){
-			qExec = QueryExecutionFactory.sparqlService(sparqlEndpointUrl, sparql);
-		}else{
-			qExec = QueryExecutionFactory.sparqlService(sparqlEndpointUrl, sparql,defaultGraphUri);
+	public TupleQueryResult sparql(String sparql) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+		Repository repo = new SPARQLRepository(sparqlEndpointUrl);
+		repo.initialize();
+		RepositoryConnection con = repo.getConnection();
+		if(defaultGraphUri!=null){
+			throw new RuntimeException("I removed the support for named graphs and forgot to add it back! shame!");
 		}
-		ResultSet res = qExec.execSelect();
-		return res;
+		TupleQuery tupleQuery =  con.prepareTupleQuery(QueryLanguage.SPARQL, sparql);
+		return tupleQuery.evaluate();
 	}
 
 	@Override
