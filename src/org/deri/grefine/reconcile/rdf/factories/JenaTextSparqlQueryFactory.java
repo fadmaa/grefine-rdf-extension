@@ -16,8 +16,6 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
 import com.google.common.collect.ImmutableList;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * factories for queries understood by <a href="http://jena.sourceforge.net/ARQ/lucene-arq.html">LARQ</a>
@@ -239,13 +237,13 @@ public class JenaTextSparqlQueryFactory extends AbstractSparqlQueryFactory{
 				"LIMIT [[LIMIT]]";
 	private static final String SINGLE_LABEL_PROPERTY_RECONCILE_QUERY_TEMPLATE =
 		"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> " + 
-		"PREFIX text:<http://jena.apache.org/text#> " +
+		"PREFIX search:<http://www.openrdf.org/contrib/lucenesail#> " +
 		"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+  
 		"SELECT ?entity ?label " +
 		"WHERE " +
 		"{ " +
-			"?entity text:query (<[[LABEL_PROPERTY_URI]]> '[[QUERY]]' [[LIMIT]]) . " +
-			"?entity <[[LABEL_PROPERTY_URI]]> ?label ." +
+			"?entity <[[LABEL_PROPERTY_URI]]> ?label; search:matches ?match . ?match search:query '[[QUERY]]' ; " +
+			"search:property <[[LABEL_PROPERTY_URI]]> ; search:score ?score . " +
 			"[[TYPE_FILTER]]" +
 			"[[CONTEXT_FILTER]]" +
 		"}GROUP BY ?entity ?label " +
@@ -260,10 +258,10 @@ public class JenaTextSparqlQueryFactory extends AbstractSparqlQueryFactory{
 			"}GROUP BY ?entity LIMIT [[LIMIT]]";
 	
 	private static final String SEARCH_ENTITY_QUERY_TEMPLATE =
-			"PREFIX text:<http://jena.apache.org/text#> " +
+			"PREFIX search:<http://www.openrdf.org/contrib/lucenesail#> " +
 			"SELECT ?entity ?label " +
 			"WHERE{" +
-			"?entity ?label_prop (?label '[[QUERY]]*' [[LIMIT]]) . " +
+			"?entity search:matches ?match . ?match search:query '[[QUERY]]*'; search:property ?label_prob . " +
 			"?entity ?label_prop ?label . " +
 			"[[LABEL_PROPERTY_FILTER]]. " +
 			"} LIMIT [[LIMIT]]";
