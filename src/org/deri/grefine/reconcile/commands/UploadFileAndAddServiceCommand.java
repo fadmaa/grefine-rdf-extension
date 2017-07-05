@@ -31,8 +31,8 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 
 import com.google.common.collect.ImmutableList;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 public class UploadFileAndAddServiceCommand extends AbstractAddServiceCommand{
 

@@ -15,9 +15,9 @@ import org.deri.grefine.reconcile.util.StringUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
 
 /**
  * @author fadmaa

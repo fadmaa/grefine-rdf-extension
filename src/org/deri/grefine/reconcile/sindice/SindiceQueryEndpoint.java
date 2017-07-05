@@ -12,8 +12,8 @@ import org.deri.grefine.reconcile.rdf.factories.SparqlQueryFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
 
 public class SindiceQueryEndpoint {
 

@@ -17,10 +17,10 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 
 import com.google.common.collect.ImmutableList;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Resource;
 
 public class PlainSparqlQueryFactory extends AbstractSparqlQueryFactory{
 

@@ -10,7 +10,7 @@ import org.json.JSONWriter;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.ResultSet;
 
 /**
  * @author fadmaa

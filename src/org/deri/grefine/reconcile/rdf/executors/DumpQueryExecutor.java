@@ -11,16 +11,17 @@ import org.apache.lucene.store.RAMDirectory;
 import org.json.JSONException;
 import org.json.JSONWriter;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.DatasetFactory;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.Syntax;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.Syntax;
+import org.apache.jena.query.text.TextIndexConfig;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 /**
  * @author fadmaa
@@ -59,13 +60,13 @@ public class DumpQueryExecutor implements QueryExecutor {
 		Dataset ds1 = DatasetFactory.createMem();
 		EntityDefinition entDef = new EntityDefinition("uri", "text",m.getResource(propertyUri)) ;
 
-        // Lucene, in memory.
-        Directory dir =  new RAMDirectory();
+    // Lucene, in memory.
+    Directory dir =  new RAMDirectory();
         
-        // Join together into a dataset
-        this.index = TextDatasetFactory.createLucene(ds1, dir, entDef) ;
-        this.index.getDefaultModel().add(m);
-        //this.index.commit();
+    // Join together into a dataset
+    this.index = TextDatasetFactory.createLucene(ds1, dir, new TextIndexConfig(entDef)) ;
+    this.index.getDefaultModel().add(m);
+    //this.index.commit();
 	}
 	
 	@Override
@@ -108,13 +109,13 @@ public class DumpQueryExecutor implements QueryExecutor {
 		Dataset ds1 = DatasetFactory.createMem();
 		EntityDefinition entDef = new EntityDefinition("uri", "text",model.getResource(propertyUri)) ;
 
-        // Lucene, in memory.
-        Directory dir =  new RAMDirectory();
+    // Lucene, in memory.
+    Directory dir =  new RAMDirectory();
         
-        // Join together into a dataset
-        this.index = TextDatasetFactory.createLucene(ds1, dir, entDef) ;
-        this.index.getDefaultModel().add(model);
-        this.index.commit();
+    // Join together into a dataset
+    this.index = TextDatasetFactory.createLucene(ds1, dir, new TextIndexConfig(entDef)) ;
+    this.index.getDefaultModel().add(model);
+    this.index.commit();
 	}
 	
 	private static final int DEFAULT_MIN_NGRAM = 3;
