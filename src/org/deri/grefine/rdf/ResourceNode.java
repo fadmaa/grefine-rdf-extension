@@ -7,14 +7,14 @@ import java.util.Properties;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
-import org.openrdf.model.BNode;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.google.refine.model.Project;
 import com.google.refine.model.Row;
@@ -92,7 +92,7 @@ abstract public class ResourceNode implements Node {
     protected Resource[] addLinks(Resource[] rs,URI baseUri,ValueFactory factory,RepositoryConnection con, Project project,Row row,int rowIndex,BNode[] blanks) throws RepositoryException{
    		for(int i=0;i<getLinkCount();i++){
            	Link l = getLink(i);
-           	org.openrdf.model.URI p = factory.createURI(Util.resolveUri(baseUri, l.propertyUri));
+           	org.eclipse.rdf4j.model.URI p = factory.createURI(Util.resolveUri(baseUri, l.propertyUri));
            	Value[] os = l.target.createNode(baseUri, factory, con, project, row, rowIndex,blanks);
            	if(os!=null){
            		for(Value o:os){

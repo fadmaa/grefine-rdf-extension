@@ -10,17 +10,19 @@ import org.apache.any23.source.DocumentSource;
 import org.apache.any23.source.HTTPDocumentSource;
 import org.apache.any23.writer.ReportingTripleHandler;
 import org.apache.any23.writer.RepositoryWriter;
-import org.openrdf.model.Value;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
-import org.openrdf.sail.memory.MemoryStore;
+import org.apache.any23.configuration.DefaultConfiguration;
+import org.apache.any23.configuration.ModifiableConfiguration;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.sail.inferencer.fc.ForwardChainingRDFSInferencer;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 
 public class VocabularyImporter {
@@ -74,7 +76,7 @@ public class VocabularyImporter {
 			}
 			runner.setHTTPUserAgent("google-refine-rdf-extension");
 			HTTPClient client = runner.getHTTPClient();
-			DocumentSource source = new HTTPDocumentSource(client, url);
+			HTTPDocumentSource source = new HTTPDocumentSource(client, url);
 			Repository repository = new SailRepository(
 					new ForwardChainingRDFSInferencer(new MemoryStore()));
 			repository.initialize();
@@ -82,7 +84,6 @@ public class VocabularyImporter {
 			RepositoryWriter w = new RepositoryWriter(con);
 			ReportingTripleHandler reporter = new ReportingTripleHandler(w);
 			runner.extract(source, reporter);
-			
 			return repository;
 		} catch (Exception e) {
 			throw new VocabularyImportException(

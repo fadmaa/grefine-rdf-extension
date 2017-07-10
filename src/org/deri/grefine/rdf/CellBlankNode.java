@@ -5,9 +5,9 @@ import java.net.URI;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
-import org.openrdf.model.BNode;
-import org.openrdf.model.Resource;
-import org.openrdf.model.ValueFactory;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.ValueFactory;
 
 import com.google.refine.expr.EvalError;
 import com.google.refine.model.Project;

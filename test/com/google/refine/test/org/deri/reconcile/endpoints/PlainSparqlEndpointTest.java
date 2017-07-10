@@ -23,8 +23,8 @@ import com.google.refine.org.deri.reconcile.rdf.endpoints.PlainSparqlQueryEndpoi
 import com.google.refine.org.deri.reconcile.rdf.executors.DumpQueryExecutor;
 import com.google.refine.org.deri.reconcile.rdf.executors.QueryExecutor;
 import com.google.refine.org.deri.reconcile.rdf.factories.PlainSparqlQueryFactory;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 public class PlainSparqlEndpointTest {
 
