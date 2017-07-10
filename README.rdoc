@@ -2,7 +2,11 @@ This project adds a graphical user interface(GUI) for exporting data of OpenRefi
 
 INSTALL
 
-you need to have the code of OpenRefine hhttps://github.com/OpenRefine/OpenRefine. Then pull the code of this extension into the extensions folder available with OpenRefine code. see https://github.com/OpenRefine/OpenRefine/wiki/Write-An-Extension
+You need to have the code of OpenRefine https://github.com/OpenRefine/OpenRefine. 
+
+*NOTE:* for vocabulary import to work you need the Jetty 9 branch of OpenRefine here https://github.com/stkenny/openrefine/tree/jetty9_migration
+
+Then pull the code of this extension into the extensions folder available with OpenRefine code. see https://github.com/OpenRefine/OpenRefine/wiki/Write-An-Extension
 
 * Rename the extension source folder to "rdf-extension"
 * make sure to update the extensions/build.xml file*  you need to add build and clean ant tasks to the extension.
