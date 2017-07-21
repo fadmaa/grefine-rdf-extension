@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONWriter;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ResultSet;
 
 /**
  * @author fadmaa

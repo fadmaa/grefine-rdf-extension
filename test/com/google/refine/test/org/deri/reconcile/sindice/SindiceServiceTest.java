@@ -17,8 +17,8 @@ import com.google.refine.org.deri.reconcile.sindice.SindiceService;
 import com.google.refine.org.deri.reconcile.util.GRefineJsonUtilities;
 import com.google.refine.org.deri.reconcile.util.GRefineJsonUtilitiesImpl;
 import com.google.refine.org.deri.reconcile.util.RdfUtilitiesImpl;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 import static org.mockito.Mockito.*;
 

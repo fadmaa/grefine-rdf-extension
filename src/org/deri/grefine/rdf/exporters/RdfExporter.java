@@ -13,18 +13,22 @@ import org.deri.grefine.rdf.Util;
 import org.deri.grefine.rdf.app.ApplicationContext;
 import org.deri.grefine.rdf.vocab.Vocabulary;
 import org.deri.grefine.rdf.vocab.VocabularyIndexException;
-import org.openrdf.model.*;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFWriter;
-import org.openrdf.rio.Rio;
-import org.openrdf.sail.memory.MemoryStore;
-
-import info.aduna.iteration.CloseableIteration;
+//import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Namespace;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.RDFWriter;
+import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 import com.google.refine.browsing.Engine;
 import com.google.refine.browsing.FilteredRows;
@@ -185,7 +189,7 @@ public class RdfExporter implements WriterExporter{
 		        writer.startRDF();
 
 		        // Export namespace information
-		        CloseableIteration<? extends Namespace, RepositoryException> nsIter = con.getNamespaces();
+		        RepositoryResult<Namespace> nsIter = con.getNamespaces();
 		        try {
 			    	while (nsIter.hasNext()) {
 						Namespace ns = nsIter.next();
@@ -207,7 +211,7 @@ public class RdfExporter implements WriterExporter{
 		    Resource[] resources = resourceList.toArray(new Resource[resourceList.size()]);
 
 		    // Export statements
-		    CloseableIteration<? extends Statement, RepositoryException> stIter =
+		    RepositoryResult<Statement> stIter =
 				    con.getStatements(null, null, null, false, resources);
 
 		    try {

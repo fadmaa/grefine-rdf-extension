@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 
 public class SindiceService extends AbstractReconciliationService{
 	final static Logger logger = LoggerFactory.getLogger("SindiceService");

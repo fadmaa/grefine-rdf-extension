@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.ResultSet;
 
 public class QueryEndpointImpl implements QueryEndpoint{
 	final static Logger logger = LoggerFactory.getLogger("QueryEndpointImpl");

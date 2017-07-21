@@ -2,10 +2,10 @@ package org.deri.grefine.rdf;
 
 import java.net.URI;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.repository.RepositoryConnection;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 import com.google.refine.Jsonizable;
 import com.google.refine.model.Project;

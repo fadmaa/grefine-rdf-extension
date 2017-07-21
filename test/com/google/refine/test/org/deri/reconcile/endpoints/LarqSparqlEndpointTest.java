@@ -24,8 +24,8 @@ import com.google.refine.org.deri.reconcile.rdf.endpoints.QueryEndpointImpl;
 import com.google.refine.org.deri.reconcile.rdf.executors.DumpQueryExecutor;
 import com.google.refine.org.deri.reconcile.rdf.executors.QueryExecutor;
 import com.google.refine.org.deri.reconcile.rdf.factories.LarqSparqlQueryFactory;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 /**
  * @author fadmaa

@@ -107,8 +107,8 @@ function init() {
     var ExporterRegistry = Packages.com.google.refine.exporters.ExporterRegistry;
     var RdfExporter = Packages.org.deri.grefine.rdf.exporters.RdfExporter;
     
-    ExporterRegistry.registerExporter("rdf", new RdfExporter(ctxt,org.openrdf.rio.RDFFormat.RDFXML));
-    ExporterRegistry.registerExporter("Turtle", new RdfExporter(ctxt,org.openrdf.rio.RDFFormat.TURTLE));
+    ExporterRegistry.registerExporter("rdf", new RdfExporter(ctxt,org.eclipse.rdf4j.rio.RDFFormat.RDFXML));
+    ExporterRegistry.registerExporter("Turtle", new RdfExporter(ctxt,org.eclipse.rdf4j.rio.RDFFormat.TURTLE));
     
     /*
      *  GREL Functions and Binders
