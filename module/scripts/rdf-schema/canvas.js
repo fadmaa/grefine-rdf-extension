@@ -1,5 +1,12 @@
 var RdfSchemaAlignment = {};
 
+function getHostname() {
+  var url = location.href;  // entire url including querystring - also: window.location.href;
+  var baseURL = url.substring(0, url.indexOf('/',7));//7 is the length of http://
+  return baseURL;
+};
+
+
 function RdfSchemaAlignmentDialog(schema){
   this._originalSchema = schema || { rootNodes: [] };
   this._schema = cloneDeep(this._originalSchema); // this is what can be munched on
@@ -12,7 +19,7 @@ function RdfSchemaAlignmentDialog(schema){
   RdfSchemaAlignment._defaultNamespace = this._schema.baseUri;
   //initialize vocabularyManager
   // TODO this._prefixesManager = new RdfPrefixesManager(this,this._schema.prefixes);
-  this._replaceBaseUri(RdfSchemaAlignment._defaultNamespace || URL.getHostname()+'/',true);
+  this._replaceBaseUri(RdfSchemaAlignment._defaultNamespace || getHostname() + '/', true);
 };
 
 RdfSchemaAlignmentDialog.prototype._createDialog = function() {
