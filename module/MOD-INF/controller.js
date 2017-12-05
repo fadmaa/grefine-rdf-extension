@@ -3,15 +3,47 @@
  */
 function init() {
   var RefineServlet = Packages.com.google.refine.RefineServlet;
+  
+  RefineServlet.registerClassMapping(
+	        "org.deri.grefine.operations.SaveRdfSchemaOperation$RdfSchemaChange",
+	        "org.deri.grefine.rdf.operations.SaveRdfSchemaOperation$RdfSchemaChange");
+	
+  // TODO do we need this RefineServlet.cacheClass(Packages.org.deri.grefine.rdf.operations.SaveRdfSchemaOperation$RdfSchemaChange);
+	
   /*
    *  Attach an rdf schema to each project.
    */
   Packages.com.google.refine.model.Project.registerOverlayModel("rdfSchema", Packages.org.deri.orefine.rdf.RdfSchema);
   
   /*
+   *  Operations
+   */
+  Packages.com.google.refine.operations.OperationRegistry.registerOperation(
+        module, "save-rdf-schema", Packages.org.deri.orefine.rdf.SaveRdfSchemaOperation);
+  
+  /*
+   *  Exporters
+   */
+  var ExporterRegistry = Packages.com.google.refine.exporters.ExporterRegistry;
+  var RdfExporter = Packages.org.deri.grefine.rdf.exporters.RdfExporter;
+    
+  ExporterRegistry.registerExporter("rdf", new Packages.org.deri.orefine.rdf.RdfExporter("rdf-xml"));
+  ExporterRegistry.registerExporter("Turtle", new Packages.org.deri.orefine.rdf.RdfExporter("ttl"));
+    
+  /*
+   *  GREL Functions and Binders
+  */
+  Packages.com.google.refine.grel.ControlFunctionRegistry.registerFunction(
+      "urlify", new Packages.org.deri.orefine.rdf.expr.Urlify());
+   
+    
+  /*
   *  Commands
   */
+  RefineServlet.registerCommand(module, "initialise-schema", new Packages.org.deri.orefine.rdf.commands.InitialiseSchemaCommand());
+  RefineServlet.registerCommand(module, "save-rdf-schema", new Packages.org.deri.orefine.rdf.commands.SaveRdfSchemaCommand());
   RefineServlet.registerCommand(module, "save-baseURI", new Packages.org.deri.orefine.rdf.commands.SaveBaseURICommand());
+  RefineServlet.registerCommand(module, "suggest-term", new Packages.org.deri.orefine.rdf.commands.SuggestTermCommand());
 
   var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
     
@@ -20,9 +52,12 @@ function init() {
     "project/scripts",
     module,
     [
+      "scripts/rdf-schema/vocab/prefix-manager.js",
       "scripts/rdf-schema/node-canvas.js",
       "scripts/rdf-schema/link-canvas.js",
       "scripts/rdf-schema/canvas.js",
+      "scripts/rdf-schema/vocab/new-prefix-widget.js",
+      "scripts/rdf-schema/vocab/suggestterm.suggest.js",
       "scripts/rdf-schema/commands.js",
       "scripts/menu-bar-extensions.js"
     ]

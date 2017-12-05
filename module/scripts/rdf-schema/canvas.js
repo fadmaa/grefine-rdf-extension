@@ -7,7 +7,23 @@ function getHostname() {
 };
 
 
-function RdfSchemaAlignmentDialog(schema){
+function RdfSchemaAlignmentDialog(schema) {
+  var self = this;
+  if (! schema) {
+    $.get(
+       "command/rdf-extension/initialise-schema",
+       {"baseURI": getHostname() + '/'}, // default base URI to the host name
+       function(data) {
+         self._init(data)
+       },
+       "json"
+    )
+  } else {
+    this._init(schema)
+  }
+};
+
+RdfSchemaAlignmentDialog.prototype._init = function(schema) {
   this._originalSchema = schema || { rootNodes: [] };
   this._schema = cloneDeep(this._originalSchema); // this is what can be munched on
   if (!this._schema.rootNodes.length) { // if the schema has no root nodes (aka a new schema), create one
@@ -18,9 +34,9 @@ function RdfSchemaAlignmentDialog(schema){
 
   RdfSchemaAlignment._defaultNamespace = this._schema.baseUri;
   //initialize vocabularyManager
-  // TODO this._prefixesManager = new RdfPrefixesManager(this,this._schema.prefixes);
-  this._replaceBaseUri(RdfSchemaAlignment._defaultNamespace || getHostname() + '/', true);
-};
+  this._prefixesManager = new RdfPrefixesManager(this,this._schema.prefixes);
+  this._replaceBaseUri(RdfSchemaAlignment._defaultNamespace, true);
+}
 
 RdfSchemaAlignmentDialog.prototype._createDialog = function() {
   var self = this;
@@ -228,7 +244,7 @@ RdfSchemaAlignmentDialog.prototype._editBaseUri = function(src){
   });
 };
 
-RdfSchemaAlignmentDialog.prototype._replaceBaseUri = function(newBaseUri,doNotSave){
+RdfSchemaAlignmentDialog.prototype._replaceBaseUri = function(newBaseUri, doNotSave){
   var self = this;
   RdfSchemaAlignment._defaultNamespace = newBaseUri;
   if(!doNotSave){
@@ -254,7 +270,7 @@ RdfSchemaAlignmentDialog.prototype.getJSON = function() {
   }
   var prefixes = [];
   for(var i=0; i<this._prefixesManager._prefixes.length; i++) {
-    prefixes.push({"name":this._prefixesManager._prefixes[i].name,"uri":this._prefixesManager._prefixes[i].uri});
+    prefixes.push({"name":this._prefixesManager._prefixes[i].name, "uri":this._prefixesManager._prefixes[i].uri});
   }
   return {
     prefixes:prefixes,
