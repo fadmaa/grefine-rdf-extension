@@ -144,8 +144,7 @@ RdfSchemaAlignmentDialog.prototype._constructBody = function(body) {
   });
     
 };
-// TODO preview RDF
-/*
+
 RdfSchemaAlignmentDialog.prototype._previewRdf = function(){
 	var self = this;
 	var schema = this.getJSON();
@@ -160,7 +159,11 @@ RdfSchemaAlignmentDialog.prototype._previewRdf = function(){
 	    "json"
 	);
 };
-*/
+
+function linkify(text) {
+    var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(exp,"<a href='$1'>$1</a>"); 
+}
 
 RdfSchemaAlignmentDialog.prototype._renderBody = function(body) {
   var self = this;
@@ -279,8 +282,6 @@ RdfSchemaAlignmentDialog.prototype.getJSON = function() {
   };
 };
 
-// TODO find column
-/*
 RdfSchemaAlignmentDialog._findColumn = function(columnName) {
     var columns = theProject.columnModel.columns;
     for (var i = 0; i < columns.length; i++) {
@@ -291,4 +292,3 @@ RdfSchemaAlignmentDialog._findColumn = function(columnName) {
     }
     return null;
 };
-*/

@@ -35,7 +35,31 @@ public class RdfSchema implements OverlayModel {
 	protected Map<String, Vocabulary> prefixesMap;
 	protected URI baseUri;
     final protected List<Node> rootNodes = new ArrayList<Node>();
-    final protected List<ConstantBlankNode> blanks = new ArrayList<ConstantBlankNode>();
+    public Map<String, Vocabulary> getPrefixesMap() {
+		return prefixesMap;
+	}
+
+	public void setPrefixesMap(Map<String, Vocabulary> prefixesMap) {
+		this.prefixesMap = prefixesMap;
+	}
+
+	public URI getBaseUri() {
+		return baseUri;
+	}
+
+	public void setBaseUri(URI baseUri) {
+		this.baseUri = baseUri;
+	}
+
+	public List<Node> getRootNodes() {
+		return rootNodes;
+	}
+
+	public List<ConstantBlankNode> getBlanks() {
+		return blanks;
+	}
+
+	final protected List<ConstantBlankNode> blanks = new ArrayList<ConstantBlankNode>();
 
 	final static Logger logger = LoggerFactory.getLogger("RdfSchema");
 
@@ -74,7 +98,6 @@ public class RdfSchema implements OverlayModel {
 		writer.object();
 		writer.key("baseUri");
 		writer.value(baseUri);
-
 		writer.key("prefixes");
 		writer.array();
 		for (Vocabulary v : this.prefixesMap.values()) {
@@ -86,13 +109,11 @@ public class RdfSchema implements OverlayModel {
 			writer.endObject();
 		}
 		writer.endArray();
-
 		writer.key("rootNodes");
 		writer.array();
-		/*
-		 * for (Node node : _rootNodes) { node.write(writer, options); }
-		 */
-
+		 for (Node node : rootNodes) { 
+			 node.write(writer, options); 
+		}
 		writer.endArray();
 		writer.endObject();
 	}

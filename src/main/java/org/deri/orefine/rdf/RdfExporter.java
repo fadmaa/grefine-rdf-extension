@@ -1,10 +1,7 @@
 package org.deri.orefine.rdf;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Writer;
-import java.net.URI;
-import java.util.List;
 import java.util.Properties;
 import com.google.refine.browsing.Engine;
 import com.google.refine.browsing.FilteredRows;
@@ -69,12 +66,12 @@ public class RdfExporter implements WriterExporter{
 				for(Node root : schema.rootNodes){
 					root.create(model, schema.baseUri, project, row, rowIndex, blanks);
 				}
-				return false; // continue visiting, true will stop the tierator
+				return false; // continue visiting, true will stop the iterator
 			}
 
 			@Override
 			public void end(Project project) {
-				model.write(writer);
+				model.write(writer, jenaFormat(format));
 			}
 			
 		};
@@ -89,5 +86,13 @@ public class RdfExporter implements WriterExporter{
         }else{
             return "application/rdf+xml";
         }
+    }
+    
+    private String jenaFormat(String f) {
+    	if(f.equals("ttl")) {
+    		return "TURTLE";
+    	} else {
+    		return "RDF/XML";
+    	}
     }
 }

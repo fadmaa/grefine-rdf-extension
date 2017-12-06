@@ -44,6 +44,9 @@ function init() {
   RefineServlet.registerCommand(module, "save-rdf-schema", new Packages.org.deri.orefine.rdf.commands.SaveRdfSchemaCommand());
   RefineServlet.registerCommand(module, "save-baseURI", new Packages.org.deri.orefine.rdf.commands.SaveBaseURICommand());
   RefineServlet.registerCommand(module, "suggest-term", new Packages.org.deri.orefine.rdf.commands.SuggestTermCommand());
+  RefineServlet.registerCommand(module, "preview-rdf", new Packages.org.deri.orefine.rdf.commands.PreviewRdfCommand());
+  RefineServlet.registerCommand(module, "preview-rdf-expression", new Packages.org.deri.orefine.rdf.commands.PreviewRdfValueExpressionCommand());
+  
 
   var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
     
@@ -59,7 +62,8 @@ function init() {
       "scripts/rdf-schema/vocab/new-prefix-widget.js",
       "scripts/rdf-schema/vocab/suggestterm.suggest.js",
       "scripts/rdf-schema/commands.js",
-      "scripts/menu-bar-extensions.js"
+      "scripts/menu-bar-extensions.js",
+      "scripts/rdf-schema/rdf-expressions-grel-view.js"
     ]
   );
   
