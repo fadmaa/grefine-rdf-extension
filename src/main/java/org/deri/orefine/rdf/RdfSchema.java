@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.deri.orefine.rdf.commands.vocab.PrefixExistsException;
 import org.deri.orefine.rdf.model.CellBlankNode;
 import org.deri.orefine.rdf.model.CellLiteralNode;
 import org.deri.orefine.rdf.model.CellResourceNode;
@@ -243,6 +244,19 @@ public class RdfSchema implements OverlayModel {
         return reconstruct(obj);
     }
 
+    public void addPrefix(String name, String uri) throws PrefixExistsException{
+    	synchronized(prefixesMap){
+    		if(this.prefixesMap.containsKey(name)){
+    			throw new PrefixExistsException(name + " already defined");
+    		}
+    		this.prefixesMap.put(name, new Vocabulary(name, uri));
+    	}
+    }
+    
+    public void removePrefix(String name){
+    	this.prefixesMap.remove(name);
+    }
+    
 	private static String stripAtt(String s) {
 		if (s == null) {
 			return s;

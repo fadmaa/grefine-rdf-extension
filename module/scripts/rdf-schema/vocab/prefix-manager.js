@@ -64,11 +64,9 @@ RdfPrefixesManager.prototype._removePrefix = function(name){
 RdfPrefixesManager.prototype._addPrefix = function(msg,def_prefix,onDone){
 	var self = this;
 	var widget = new NewPrefixWidget(self);
-	widget.show(msg,def_prefix,function(name,uri){
+	widget.show(msg, def_prefix, function(name,uri){
 		self._prefixes.push({name:name,uri:uri});
-		self._savePrefixes(function(){
-			self._showPrefixes();
-		});
+		self._showPrefixes();
 		if(onDone){
 			onDone();
 		}

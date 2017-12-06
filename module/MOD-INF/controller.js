@@ -34,15 +34,18 @@ function init() {
    
     
   /*
-  *  Commands
+   *  Commands
   */
+  // RDF Commands
   RefineServlet.registerCommand(module, "initialise-schema", new Packages.org.deri.orefine.rdf.commands.InitialiseSchemaCommand());
   RefineServlet.registerCommand(module, "save-rdf-schema", new Packages.org.deri.orefine.rdf.commands.SaveRdfSchemaCommand());
   RefineServlet.registerCommand(module, "save-baseURI", new Packages.org.deri.orefine.rdf.commands.SaveBaseURICommand());
-  RefineServlet.registerCommand(module, "suggest-term", new Packages.org.deri.orefine.rdf.commands.SuggestTermCommand());
   RefineServlet.registerCommand(module, "preview-rdf", new Packages.org.deri.orefine.rdf.commands.PreviewRdfCommand());
   RefineServlet.registerCommand(module, "preview-rdf-expression", new Packages.org.deri.orefine.rdf.commands.PreviewRdfValueExpressionCommand());
-  
+  // Vocabulary commands
+  RefineServlet.registerCommand(module, "add-prefix", new Packages.org.deri.orefine.rdf.commands.vocab.AddPrefixCommand());
+  RefineServlet.registerCommand(module, "remove-prefix", new Packages.org.deri.orefine.rdf.commands.vocab.RemovePrefixCommand());
+  RefineServlet.registerCommand(module, "suggest-term", new Packages.org.deri.orefine.rdf.commands.vocab.SuggestTermCommand());
 
   var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
     
@@ -52,6 +55,7 @@ function init() {
     module,
     [
       "scripts/rdf-schema/vocab/prefix-manager.js",
+      "scripts/rdf-schema/vocab/manage-prefixes-widget.js",
       "scripts/rdf-schema/node-canvas.js",
       "scripts/rdf-schema/link-canvas.js",
       "scripts/rdf-schema/canvas.js",

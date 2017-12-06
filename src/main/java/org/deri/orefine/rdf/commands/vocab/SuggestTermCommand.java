@@ -1,4 +1,4 @@
-package org.deri.orefine.rdf.commands;
+package org.deri.orefine.rdf.commands.vocab;
 
 import java.io.IOException;
 

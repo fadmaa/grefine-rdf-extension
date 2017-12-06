@@ -8,7 +8,7 @@ NewPrefixWidget.prototype.show = function(msg,def_prefix,onDone){
     
     frame.width("350px");
 
-    var html = $(DOM.loadHTML("rdf-extension","scripts/new-prefix-widget.html"));
+    var html = $(DOM.loadHTML("rdf-extension","scripts/rdf-schema/vocab/new-prefix-widget.html"));
     
     var header = $('<div></div>').addClass("dialog-header").text("New Prefix").appendTo(frame);
     var body = $('<div class="grid-layout layout-full"></div>').addClass("dialog-body").append(html).appendTo(frame);
