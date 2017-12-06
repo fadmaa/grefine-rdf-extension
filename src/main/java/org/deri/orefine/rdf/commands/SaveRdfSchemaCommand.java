@@ -28,6 +28,8 @@ public class SaveRdfSchemaCommand extends Command{
             AbstractOperation op = new SaveRdfSchemaOperation(schema);
             Process process = op.createProcess(project, new Properties());
             performProcessAndRespond(request, response, project, process);
+            project.overlayModels.put("rdfSchema", schema);
+			project.getMetadata().updateModified();
         } catch (Exception e) {
             respondException(response, e);
         }

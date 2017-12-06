@@ -70,6 +70,7 @@ public class SaveRdfSchemaOperation extends AbstractOperation {
             synchronized (project) {
                 _oldSchema = (RdfSchema) project.overlayModels.get("rdfSchema");
                 project.overlayModels.put("rdfSchema", _newSchema);
+				project.getMetadata().updateModified();
             }
         }
         

@@ -237,6 +237,11 @@ public class RdfSchema implements OverlayModel {
             node.setTypes(types);
         }
     }
+    
+    // this gets called via reflection to load the overlaymode
+    static public RdfSchema load(Project project, JSONObject obj) throws Exception {
+        return reconstruct(obj);
+    }
 
 	private static String stripAtt(String s) {
 		if (s == null) {

@@ -4,11 +4,7 @@
 function init() {
   var RefineServlet = Packages.com.google.refine.RefineServlet;
   
-  RefineServlet.registerClassMapping(
-	        "org.deri.grefine.operations.SaveRdfSchemaOperation$RdfSchemaChange",
-	        "org.deri.grefine.rdf.operations.SaveRdfSchemaOperation$RdfSchemaChange");
-	
-  // TODO do we need this RefineServlet.cacheClass(Packages.org.deri.grefine.rdf.operations.SaveRdfSchemaOperation$RdfSchemaChange);
+  //RefineServlet.cacheClass(Packages.org.deri.orefine.rdf.SaveRdfSchemaOperation$RdfSchemaChacnge);
 	
   /*
    *  Attach an rdf schema to each project.
