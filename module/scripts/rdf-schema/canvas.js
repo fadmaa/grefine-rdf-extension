@@ -11,7 +11,7 @@ function RdfSchemaAlignmentDialog(schema) {
   var self = this;
   if (! schema) {
     $.get(
-       "command/rdf-extension/initialise-schema",
+       "command/rdf-extension/initialise-schema?" + $.param({project: theProject.id }),
        {"baseURI": getHostname() + '/'}, // default base URI to the host name
        function(data) {
          self._init(data)

@@ -26,6 +26,7 @@ NewPrefixWidget.prototype.show = function(msg,def_prefix,onDone){
     var importVocabulary = function(fetchOption,onDone){
     	var name = self._elmts.prefix.val();
     	var uri = self._elmts.uri.val();
+    	var fetchUrl = self._elmts.fetchUrl.val();
     	if(self._prefixesManager._hasPrefix(name)){
     		alert('Prefix "' + name + '" is already defined');
     		return;
@@ -55,7 +56,7 @@ NewPrefixWidget.prototype.show = function(msg,def_prefix,onDone){
     		return;
     	}
 		dismissBusy = DialogSystem.showBusy('Trying to import vocabulary from ' + uri);
-    	$.post("command/rdf-extension/add-prefix",{name:name,uri:uri,"fetch-url":uri,project: theProject.id,fetch:fetchOption},function(data){
+    	$.post("command/rdf-extension/add-prefix",{name:name, uri:uri, "fetch-url":fetchUrl, project: theProject.id,fetch:fetchOption},function(data){
     		if (data.code === "error"){
     			alert('Error:' + data.message)
     		}else{
@@ -77,17 +78,15 @@ NewPrefixWidget.prototype.show = function(msg,def_prefix,onDone){
         DialogSystem.dismissUntil(level - 1);
     }).appendTo(footer);
     
-    $('<button></button>').attr('id','advanced_options_button').attr("disabled","").attr("style","float:right").text("Advanced...").click(function() {
+    /*$('<button></button>').attr('id','advanced_options_button').attr("disabled","").attr("style","float:right").text("Advanced...").click(function() {
         self._elmts.fetching_options_table.show();
         $('#advanced_options_button').attr("disabled", "disabled");
     }).appendTo(footer);
-    
-    
+    */
     
     var level = DialogSystem.showDialog(frame);
     
     self._elmts.fetching_options_table
-	.hide()
 	.find('input[name="vocab_fetch_method"]').click(function(){
 		var upload = $(this).val()!=='file';
 		self._elmts.fetching_options_table.find('.upload_file_inputs').attr('disabled',upload);

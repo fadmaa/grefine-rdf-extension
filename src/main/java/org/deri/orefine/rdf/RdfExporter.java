@@ -42,7 +42,7 @@ public class RdfExporter implements WriterExporter{
 		// create an empty model
 	    Model model = ModelFactory.createDefaultModel();
 		// register namespaces
-		for(Vocabulary v : schema.prefixesMap.values()) {
+		for(Vocabulary v : schema.getPrefixes().getPrefixesMap().values()) {
 			model.setNsPrefix(v.getName(), v.getUri());
 	    }
 		// prepare all constant blank nodes

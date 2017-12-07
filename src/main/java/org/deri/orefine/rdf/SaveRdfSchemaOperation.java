@@ -25,8 +25,7 @@ public class SaveRdfSchemaOperation extends AbstractOperation {
 
     static public AbstractOperation reconstruct(Project project, JSONObject obj)
             throws Exception {
-        return new SaveRdfSchemaOperation(RdfSchema.reconstruct(obj
-                .getJSONObject("schema")));
+        return new SaveRdfSchemaOperation(RdfSchema.reconstruct(obj.getJSONObject("schema")));
     }
 
     public void write(JSONWriter writer, Properties options)
@@ -113,10 +112,8 @@ public class SaveRdfSchemaOperation extends AbstractOperation {
                             .evaluateJsonStringToObject(value));
                 }
             }
-            
             RdfSchemaChange change = new RdfSchemaChange(newSchema);
             change._oldSchema = oldSchema;
-            
             return change;
         }
         

@@ -42,7 +42,7 @@ public class PreviewRdfCommand extends Command {
 	     // create an empty model
 		    Model model = ModelFactory.createDefaultModel();
 			// register namespaces
-			for(Vocabulary v : schema.getPrefixesMap().values()) {
+			for(Vocabulary v : schema.getPrefixes().getPrefixesMap().values()) {
 				model.setNsPrefix(v.getName(), v.getUri());
 		    }
 			// prepare all constant blank nodes

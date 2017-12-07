@@ -38,8 +38,8 @@ public class PredefinedVocabularies {
 
 				String name = tokenizer.nextToken();
 				String uri = tokenizer.nextToken();
-				//String url = tokenizer.nextToken();
-				predefinedVocabularies.add(new Vocabulary(name, uri));
+				String fetchUrl = tokenizer.nextToken();
+				predefinedVocabularies.add(new Vocabulary(name, uri, fetchUrl));
 
 			}
 			br.close();

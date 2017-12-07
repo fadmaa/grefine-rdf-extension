@@ -15,7 +15,7 @@ public class RemovePrefixCommand extends Command{
 		String name = request.getParameter("name").trim();
         try {
         	Project project = getProject(request);
-        	((RdfSchema) project.overlayModels.get("rdfSchema")).removePrefix(name);
+        	((RdfSchema) project.overlayModels.get("rdfSchema")).getPrefixes().removePrefix(name);
         		// TODO remove vocabulary terms from the index  
         	response.setCharacterEncoding("UTF-8");
             response.setHeader("Content-Type", "application/json");

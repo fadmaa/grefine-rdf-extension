@@ -7,14 +7,18 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/grefine"/>
 	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-base-3.5.0.jar"/>
 	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-core-3.5.0.jar"/>
-	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-iri-3.5.0.jar"/>
-	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-shaded-guava-3.5.0.jar"/>
 	<classpathentry kind="lib" path="module/MOD-INF/other-lib/annotations-12.0.jar"/>
 	<classpathentry kind="lib" path="module/MOD-INF/other-lib/collection-0.7.jar"/>
-	<classpathentry kind="lib" path="module/MOD-INF/other-lib/commons-io-2.5.jar"/>
 	<classpathentry kind="lib" path="module/MOD-INF/other-lib/commons-lang3-3.4.jar"/>
 	<classpathentry kind="lib" path="module/MOD-INF/other-lib/slf4j-api-1.7.25.jar"/>
 	<classpathentry kind="lib" path="module/MOD-INF/other-lib/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="module/MOD-INF/other-lib/xml-apis-2.0.2.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-arq-3.5.0.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/lucene-analyzers-common-6.4.1.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/lucene-core-6.4.1.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/lucene-queryparser-6.4.1.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-iri-3.5.0.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/lib/jena-shaded-guava-3.5.0.jar"/>
+	<classpathentry kind="lib" path="module/MOD-INF/other-lib/commons-io-2.5.jar"/>
 	<classpathentry kind="output" path="module/MOD-INF/classes"/>
 </classpath>

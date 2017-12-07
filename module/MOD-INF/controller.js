@@ -12,6 +12,12 @@ function init() {
   Packages.com.google.refine.model.Project.registerOverlayModel("rdfSchema", Packages.org.deri.orefine.rdf.RdfSchema);
   
   /*
+   * Initialise RDF Lucene index 
+  */
+  var initialiser = new Packages.org.deri.orefine.rdf.commands.InitialiseVocabularyIndex();
+  RefineServlet.registerCommand(module, "initialise", initialiser);
+  
+  /*
    *  Operations
    */
   Packages.com.google.refine.operations.OperationRegistry.registerOperation(

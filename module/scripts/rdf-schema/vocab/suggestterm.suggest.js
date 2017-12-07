@@ -36,8 +36,8 @@
 	                             
 	                             clearTimeout(this.request.timeout);
                     	    	 data["prefix"] = query;
-                    	    	 data["type_strict"] = o.type_strict;
-                    	    	 data["type"] = theProject.id;
+                    	    	 data["type"] = o.type;
+                    	    	 data["project"] = theProject.id;
 	                            
                     	    	 var url = o.service_url + o.service_path + "?" + $.param(data, true);
 	                             var ajax_options = {

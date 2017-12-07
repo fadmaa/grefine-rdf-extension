@@ -3,12 +3,9 @@ package org.deri.orefine.rdf;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-import org.deri.orefine.rdf.commands.vocab.PrefixExistsException;
 import org.deri.orefine.rdf.model.CellBlankNode;
 import org.deri.orefine.rdf.model.CellLiteralNode;
 import org.deri.orefine.rdf.model.CellResourceNode;
@@ -19,8 +16,8 @@ import org.deri.orefine.rdf.model.Link;
 import org.deri.orefine.rdf.model.Node;
 import org.deri.orefine.rdf.model.ResourceNode;
 import org.deri.orefine.rdf.model.ResourceNode.RdfType;
-import org.deri.orefine.rdf.vocab.PredefinedVocabularies;
 import org.deri.orefine.rdf.vocab.Vocabulary;
+import org.deri.orefine.rdf.vocab.ProjectPrefixes;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,17 +30,10 @@ import com.google.refine.model.Project;
 
 public class RdfSchema implements OverlayModel {
 
-	protected Map<String, Vocabulary> prefixesMap;
 	protected URI baseUri;
+	private ProjectPrefixes prefixes;
     final protected List<Node> rootNodes = new ArrayList<Node>();
-    public Map<String, Vocabulary> getPrefixesMap() {
-		return prefixesMap;
-	}
-
-	public void setPrefixesMap(Map<String, Vocabulary> prefixesMap) {
-		this.prefixesMap = prefixesMap;
-	}
-
+    
 	public URI getBaseUri() {
 		return baseUri;
 	}
@@ -60,16 +50,20 @@ public class RdfSchema implements OverlayModel {
 		return blanks;
 	}
 
+	public ProjectPrefixes getPrefixes() {
+		return prefixes;
+	}
+	
 	final protected List<ConstantBlankNode> blanks = new ArrayList<ConstantBlankNode>();
 
 	final static Logger logger = LoggerFactory.getLogger("RdfSchema");
 
-	public RdfSchema() {
-		this.prefixesMap = new HashMap<String, Vocabulary>();
+	public RdfSchema() throws IOException {
+		this.prefixes = new ProjectPrefixes();
 	}
 
 	public RdfSchema(URI baseUri) throws IOException {
-		this.prefixesMap = PredefinedVocabularies.getPredefinedVocabulariesAsMap();
+		this.prefixes = new ProjectPrefixes();
 		this.baseUri = baseUri;
 	}
 
@@ -101,7 +95,7 @@ public class RdfSchema implements OverlayModel {
 		writer.value(baseUri);
 		writer.key("prefixes");
 		writer.array();
-		for (Vocabulary v : this.prefixesMap.values()) {
+		for (Vocabulary v : this.prefixes.getPrefixesMap().values()) {
 			writer.object();
 			writer.key("name");
 			writer.value(v.getName());
@@ -119,7 +113,7 @@ public class RdfSchema implements OverlayModel {
 		writer.endObject();
 	}
 
-	static public RdfSchema reconstruct(JSONObject o) throws JSONException {
+	static public RdfSchema reconstruct(JSONObject o) throws JSONException, IOException {
         RdfSchema s = new RdfSchema();
         s.baseUri = Utils.buildURI(o.getString("baseUri"));
         
@@ -133,7 +127,9 @@ public class RdfSchema implements OverlayModel {
         for (int i = 0; i < prefixesArr.length(); i++) {
         	JSONObject prefixObj = prefixesArr.getJSONObject(i);
         	String name = prefixObj.getString("name");
-        	s.prefixesMap.put(name, new Vocabulary(name, prefixObj.getString("uri")));
+        	String vocabUri = prefixObj.getString("uri");
+        	String fetchUrl = prefixObj.has("fetchUrl") ? prefixObj.getString("fetchUrl") : vocabUri;
+        	s.prefixes.getPrefixesMap().put(name, new Vocabulary(name, vocabUri, fetchUrl));
         }
         
         JSONArray rootNodes = o.getJSONArray("rootNodes");
@@ -244,19 +240,6 @@ public class RdfSchema implements OverlayModel {
         return reconstruct(obj);
     }
 
-    public void addPrefix(String name, String uri) throws PrefixExistsException{
-    	synchronized(prefixesMap){
-    		if(this.prefixesMap.containsKey(name)){
-    			throw new PrefixExistsException(name + " already defined");
-    		}
-    		this.prefixesMap.put(name, new Vocabulary(name, uri));
-    	}
-    }
-    
-    public void removePrefix(String name){
-    	this.prefixesMap.remove(name);
-    }
-    
 	private static String stripAtt(String s) {
 		if (s == null) {
 			return s;

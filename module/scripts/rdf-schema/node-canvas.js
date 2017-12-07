@@ -857,7 +857,7 @@ RdfSchemaAlignmentDialog.RdfResourceDialog = function(elmt,lookFor,projectId,par
 	var elmts = DOM.bind(menu);
 	
 	
-	elmts.newResourceUri.suggestterm({type:''+projectId,type_strict:lookFor,parent:'.schema-alignment-link-menu-type-search'}).bind('fb-select',function(e,data){
+	elmts.newResourceUri.suggestterm({type:''+projectId,type:lookFor,parent:'.schema-alignment-link-menu-type-search'}).bind('fb-select',function(e,data){
 		MenuSystem.dismissAll();
 		if(onDone){
 			onDone(data);

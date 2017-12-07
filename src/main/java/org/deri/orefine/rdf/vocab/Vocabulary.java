@@ -4,20 +4,27 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 
 public class Vocabulary {
-	private String name;
-	private String uri;
+	private final String name;
+	private final String uri;
+	private final String fetchUrl;
 
-    public Vocabulary(String name, String uri){
+    public Vocabulary(String name, String uri, String fetchUrl){
     	this.name = name;
     	this.uri = uri;
+    	this.fetchUrl = fetchUrl;
     }
     
 
 	public String getName() {
 		return name;
 	}
+	
 	public String getUri() {
 		return uri;
+	}
+	
+	public String getFetchUrl() {
+		return fetchUrl;
 	}
 	
     public void write(JSONWriter writer)throws JSONException {
