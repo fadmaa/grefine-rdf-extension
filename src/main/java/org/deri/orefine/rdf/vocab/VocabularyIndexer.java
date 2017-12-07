@@ -222,4 +222,27 @@ public class VocabularyIndexer {
 	private int getMaxDoc() throws IOException {
 		return reader.maxDoc() > 0 ? reader.maxDoc() : 100000;
 	}
+	
+	public void deleteTermsOfVocab(String vocabName, String projectId) throws CorruptIndexException, IOException {
+		deleteTerms(vocabName, projectId);
+		this.update();
+	}
+	
+	private void deleteTerms(String prefix, String projectId)
+			throws CorruptIndexException, IOException {
+		if (projectId == null || projectId.isEmpty()) {
+			throw new RuntimeException("projectId is null");
+		}
+		// "type":vocabulary AND "projectId":projectId AND "name":name
+		// ("type": (class OR property) ) AND "projectId":projectId AND
+		// "prefix":name
+		BooleanQuery.Builder termsQuery = new BooleanQuery.Builder();
+		BooleanQuery.Builder typeQuery = new BooleanQuery.Builder();
+		typeQuery.add(new TermQuery(new Term("type", CLASS_TYPE)), Occur.SHOULD);
+		typeQuery.add(new TermQuery(new Term("type", PROPERTY_TYPE)), Occur.SHOULD);
+		termsQuery.add(typeQuery.build(), Occur.MUST);
+		termsQuery.add(new TermQuery(new Term("projectId", projectId)), Occur.MUST);
+		termsQuery.add(new TermQuery(new Term("prefix", prefix)), Occur.MUST);
+		writer.deleteDocuments(termsQuery.build());
+	}
 }

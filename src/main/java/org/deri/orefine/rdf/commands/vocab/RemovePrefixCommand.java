@@ -5,6 +5,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.deri.orefine.rdf.RdfSchema;
+import org.deri.orefine.rdf.vocab.VocabularyIndexer;
+
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 
@@ -16,7 +18,8 @@ public class RemovePrefixCommand extends Command{
         try {
         	Project project = getProject(request);
         	((RdfSchema) project.overlayModels.get("rdfSchema")).getPrefixes().removePrefix(name);
-        		// TODO remove vocabulary terms from the index  
+        	// remove vocabulary terms from the index
+        	VocabularyIndexer.singleton.deleteTermsOfVocab(name, String.valueOf(project.id));
         	response.setCharacterEncoding("UTF-8");
             response.setHeader("Content-Type", "application/json");
         	respond(response,"{\"code\":\"ok\"}");
