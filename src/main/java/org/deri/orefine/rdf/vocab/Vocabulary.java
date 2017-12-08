@@ -29,13 +29,11 @@ public class Vocabulary {
 	
     public void write(JSONWriter writer)throws JSONException {
         writer.object();
-        
         writer.key("name"); writer.value(name);
         writer.key("uri"); writer.value(uri);
-        
+        writer.key("fetchUrl"); writer.value(fetchUrl);
         writer.endObject();
     }
-
 
 	@Override
 	public int hashCode() {

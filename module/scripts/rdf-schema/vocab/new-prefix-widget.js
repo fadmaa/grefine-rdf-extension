@@ -55,14 +55,14 @@ NewPrefixWidget.prototype.show = function(msg,def_prefix,onDone){
     		});
     		return;
     	}
-		dismissBusy = DialogSystem.showBusy('Trying to import vocabulary from ' + uri);
-    	$.post("command/rdf-extension/add-prefix",{name:name, uri:uri, "fetch-url":fetchUrl, project: theProject.id,fetch:fetchOption},function(data){
+		dismissBusy = DialogSystem.showBusy('Trying to import vocabulary from ' + fetchUrl);
+    	$.post("command/rdf-extension/add-prefix",{name:name, uri:uri, "fetch-url":fetchUrl, project: theProject.id, fetch:fetchOption},function(data){
     		if (data.code === "error"){
     			alert('Error:' + data.message)
     		}else{
     			DialogSystem.dismissUntil(level - 1);
     			if(onDone){
-    				onDone(name,uri);
+    				onDone(name, uri, fetchUrl);
     			}
     		}
 			dismissBusy();
@@ -86,8 +86,7 @@ NewPrefixWidget.prototype.show = function(msg,def_prefix,onDone){
     
     var level = DialogSystem.showDialog(frame);
     
-    self._elmts.fetching_options_table
-	.find('input[name="vocab_fetch_method"]').click(function(){
+    self._elmts.fetching_options_table.find('input[name="vocab_fetch_method"]').click(function(){
 		var upload = $(this).val()!=='file';
 		self._elmts.fetching_options_table.find('.upload_file_inputs').attr('disabled',upload);
 	});

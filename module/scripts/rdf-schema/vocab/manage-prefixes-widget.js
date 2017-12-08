@@ -45,12 +45,12 @@ ManageVocabsWidget.prototype.renderBody = function(){
 			});
     	} 
     };
-    var getRefreshHandler = function(name,uri){
+    var getRefreshHandler = function(name, uri, fetchUrl){
     	return function(e){
     		e.preventDefault();
-    		if (window.confirm("This will re-fetch the vocabulary from \"" + uri + "\" If you added it by uploading a file you need to delete it and add it again to refresh the index. Continue?")) {
+    		if (window.confirm("This will re-fetch the vocabulary from \"" + fetchUrl + "\" If you added it by uploading a file you need to delete it and add it again to refresh the index. Continue?")) {
     			dismissBusy = DialogSystem.showBusy('Refreshing prefix ' + name);
-    			$.post('command/rdf-extension/refresh-prefix',{'name':name,'uri':uri,'project':theProject.id},function(data){
+    			$.post('command/rdf-extension/refresh-prefix',{'name':name,'uri':uri, 'fetchUrl':fetchUrl, 'project':theProject.id},function(data){
     				dismissBusy();
     				if(data.code==='error'){
     					alert('something went wrong: ' + data.messge);
@@ -61,9 +61,10 @@ ManageVocabsWidget.prototype.renderBody = function(){
     };
 	for(var i=0;i<self._prefixesManager._prefixes.length;i++){
 		var name =self._prefixesManager._prefixes[i].name;
-		var uri =self._prefixesManager._prefixes[i].uri;
+		var uri = self._prefixesManager._prefixes[i].uri;
+		var fetchUrl = self._prefixesManager._prefixes[i].fetchUrl;
 		var delete_handle = $('<a/>').text('delete').attr('href','#').click(getDeleteHandler(name));
-		var refresh_handle = $('<a/>').text('refresh').attr('href','#').click(getRefreshHandler(name,uri));
+		var refresh_handle = $('<a/>').text('refresh').attr('href','#').click(getRefreshHandler(name, uri, fetchUrl));
 		var tr = $('<tr/>').addClass(i%2==1?'rdf-table-even':'rdf-table-odd')
 							.append($('<td>').text(self._prefixesManager._prefixes[i].name))
 							.append($('<td>').text(self._prefixesManager._prefixes[i].uri))

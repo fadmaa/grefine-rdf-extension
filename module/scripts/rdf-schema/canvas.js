@@ -273,7 +273,11 @@ RdfSchemaAlignmentDialog.prototype.getJSON = function() {
   }
   var prefixes = [];
   for(var i=0; i<this._prefixesManager._prefixes.length; i++) {
-    prefixes.push({"name":this._prefixesManager._prefixes[i].name, "uri":this._prefixesManager._prefixes[i].uri});
+    prefixes.push({
+    "name":this._prefixesManager._prefixes[i].name, 
+    "uri":this._prefixesManager._prefixes[i].uri,
+    "fetchUrl":this._prefixesManager._prefixes[i].fetchUrl
+    });
   }
   return {
     prefixes:prefixes,

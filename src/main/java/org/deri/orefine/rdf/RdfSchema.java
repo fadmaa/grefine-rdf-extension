@@ -96,12 +96,7 @@ public class RdfSchema implements OverlayModel {
 		writer.key("prefixes");
 		writer.array();
 		for (Vocabulary v : this.prefixes.getPrefixesMap().values()) {
-			writer.object();
-			writer.key("name");
-			writer.value(v.getName());
-			writer.key("uri");
-			writer.value(v.getUri());
-			writer.endObject();
+			v.write(writer);
 		}
 		writer.endArray();
 		writer.key("rootNodes");
