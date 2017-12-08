@@ -10,7 +10,7 @@ public class ProjectPrefixes {
 	private Map<String, Vocabulary> prefixesMap = new HashMap<String, Vocabulary>();
 
 	public void loadPredefinedVocabs(String projectId) throws IOException {
-		this.prefixesMap = PredefinedVocabularies.getPredefinedVocabulariesAsMap();
+		this.prefixesMap = PredefinedVocabularies.singleton.prefixesMap;
 		// index these vocabularies
 		for(Vocabulary v : this.prefixesMap.values()) {
 			VocabularyImporter.importAndIndexVocabulary(v, VocabularyIndexer.singleton, projectId);

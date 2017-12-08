@@ -13,18 +13,25 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PredefinedVocabularies {
-	final static Logger logger = LoggerFactory.getLogger("predefined_vocabulary_manager");
-	private static final String PREDEFINED_VOCABS_FILE_NAME = "files/predefined_vocabs.tsv";
+public class PrefixesCC {
+	final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final String PREFIXES_CC_FILE_NAME = "files/prefixes_cc.tsv";
 	public final Map<String, Vocabulary> prefixesMap;
-	
-	public static PredefinedVocabularies singleton = new PredefinedVocabularies();
-	
-	private PredefinedVocabularies() {
+	public static PrefixesCC singleton = new PrefixesCC();
+
+	private PrefixesCC() {
 		try {
 			prefixesMap = getPredefinedVocabulariesAsMap();
 		} catch (IOException e) {
-			throw new RuntimeException("RDF Extension failed to intialise predefined vocabularies", e);
+			throw new RuntimeException("RDF Extension failed to intialise predefined prefixes", e);
+		}
+	}
+	
+	public String getUri(String prefix) {
+		if(prefixesMap.containsKey(prefix)) {
+			return prefixesMap.get(prefix).getUri();	
+		} else {
+			return "";
 		}
 	}
 	
@@ -49,7 +56,7 @@ public class PredefinedVocabularies {
 
 				String name = tokenizer.nextToken();
 				String uri = tokenizer.nextToken();
-				String fetchUrl = tokenizer.nextToken();
+				String fetchUrl = uri;
 				predefinedVocabularies.add(new Vocabulary(name, uri, fetchUrl));
 
 			}
@@ -58,12 +65,12 @@ public class PredefinedVocabularies {
 		} catch (Exception e) {
 			// predefined vocabularies are not defined properly
 			// ignore the exception, just log it
-			logger.warn("unable to load predefined vocabularies", e);
+			logger.warn("unable to load predefined prefixes", e);
 		}
 		return predefinedVocabularies;
 	}
 
 	protected static InputStream getPredefinedVocabularyFile() {
-		return PredefinedVocabularies.class.getClassLoader().getResourceAsStream(PREDEFINED_VOCABS_FILE_NAME);
+		return PredefinedVocabularies.class.getClassLoader().getResourceAsStream(PREFIXES_CC_FILE_NAME);
 	}
 }

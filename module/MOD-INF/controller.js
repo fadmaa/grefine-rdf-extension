@@ -52,6 +52,7 @@ function init() {
   RefineServlet.registerCommand(module, "add-prefix", new Packages.org.deri.orefine.rdf.commands.vocab.AddPrefixCommand());
   RefineServlet.registerCommand(module, "remove-prefix", new Packages.org.deri.orefine.rdf.commands.vocab.RemovePrefixCommand());
   RefineServlet.registerCommand(module, "refresh-prefix", new Packages.org.deri.orefine.rdf.commands.vocab.RefreshPrefixCommand());
+  RefineServlet.registerCommand(module, "get-prefix-cc-uri", new Packages.org.deri.orefine.rdf.commands.vocab.SuggestPrefixUriCommand());
   RefineServlet.registerCommand(module, "suggest-term", new Packages.org.deri.orefine.rdf.commands.vocab.SuggestTermCommand());
 
   var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;

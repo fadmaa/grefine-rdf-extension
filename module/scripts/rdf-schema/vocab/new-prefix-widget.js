@@ -101,6 +101,9 @@ NewPrefixWidget.prototype.suggestUri = function(prefix){
 	$.get("command/rdf-extension/get-prefix-cc-uri",{prefix:prefix},function(data){
 		if(!self._elmts.uri.val() && data.uri){
 			self._elmts.uri.val(data.uri);
+			if(! self._elmts.fetchUrl.val()) {
+			  self._elmts.fetchUrl.val(data.uri);
+			}
 			if(self._elmts.message.text()){
 				self._elmts.message.find('div').remove().end().append($('<span>(a suggestion from <em><a target="_blank" href="http://prefix.cc">prefix.cc</a></em> is provided)</span>'));
 			}else{
