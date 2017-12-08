@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
@@ -34,6 +36,7 @@ public class VocabularyIndexer {
 
 	private static final String CLASS_TYPE = "class";
 	private static final String PROPERTY_TYPE = "property";
+	public static final String GLOBAL_VOCABULARY_PLACE_HOLDER = "g";
 
 	private IndexWriter writer;
 	private IndexSearcher searcher;
@@ -43,9 +46,39 @@ public class VocabularyIndexer {
 	public static VocabularyIndexer singleton = null;
 	
 	public static void initialise(String workingDir) throws IOException {
-		singleton = new VocabularyIndexer(workingDir); 
+		singleton = new VocabularyIndexer(workingDir);
 	}
 	
+	public void addPredefinedVocabulariesToProject(String projectId)throws IOException{
+		//get all documents of the global scope
+		TopDocs docs = getDocumentsOfProjectId(GLOBAL_VOCABULARY_PLACE_HOLDER);
+		//add all of them to project projectId
+		addDocumentsToProject(docs, projectId);
+		this.update();
+	}
+
+	private void addDocumentsToProject(TopDocs docs,String projectId) throws CorruptIndexException, IOException{
+		for(int i=0;i<docs.totalHits;i++){
+			Document doc = searcher.doc(docs.scoreDocs[i].doc);
+			//TODO this needs to be changed into a more efficient impl
+			Document newdoc = new Document();
+			Iterator fieldsIter = doc.getFields().iterator();
+			while(fieldsIter.hasNext()){
+				newdoc.add((IndexableField)fieldsIter.next());
+			}
+			newdoc.removeField("projectId");
+			newdoc.add(new StringField("projectId",projectId,Field.Store.YES));
+			writer.addDocument(newdoc);
+		}
+	}
+	
+	private TopDocs getDocumentsOfProjectId(String projectId) throws IOException{
+		//query for:
+		// "projectId":projectId
+		Query query = new TermQuery(new Term("projectId",projectId));
+		return searcher.search(query, getMaxDoc());
+	}
+
 	private VocabularyIndexer(String workingDir) throws IOException {
 		this.workingDir = workingDir;
 		FSDirectory dir = FSDirectory.open(Paths.get(workingDir));
@@ -56,6 +89,12 @@ public class VocabularyIndexer {
 		searcher = new IndexSearcher(reader);
 	}
 
+	public boolean globalVocabsIndexed() throws IOException {
+		BooleanQuery.Builder query = new BooleanQuery.Builder();		
+		query.add(new TermQuery(new Term("projectId", GLOBAL_VOCABULARY_PLACE_HOLDER)), Occur.MUST);
+		TopDocs docs = searcher.search(query.build(), getMaxDoc());
+		return docs.totalHits > 0;
+	}
 	public void indexTerms(String name, String uri, String projectId, Set<IndexedRDFTerm> classes,
 			Set<IndexedRDFTerm> properties) throws CorruptIndexException, IOException {
 		for (IndexedRDFTerm c : classes) {

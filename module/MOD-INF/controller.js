@@ -14,7 +14,7 @@ function init() {
   /*
    * Initialise RDF Lucene index 
   */
-  var initialiser = new Packages.org.deri.orefine.rdf.commands.InitialiseVocabularyIndex();
+  var initialiser = new Packages.org.deri.orefine.rdf.commands.vocab.InitialiseVocabularyIndex();
   RefineServlet.registerCommand(module, "initialise", initialiser);
   
   /*

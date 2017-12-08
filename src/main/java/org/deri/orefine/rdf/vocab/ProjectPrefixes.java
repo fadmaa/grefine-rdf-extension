@@ -11,10 +11,9 @@ public class ProjectPrefixes {
 
 	public void loadPredefinedVocabs(String projectId) throws IOException {
 		this.prefixesMap = PredefinedVocabularies.singleton.prefixesMap;
-		// index these vocabularies
-		for(Vocabulary v : this.prefixesMap.values()) {
-			VocabularyImporter.importAndIndexVocabulary(v, VocabularyIndexer.singleton, projectId);
-		}
+		// add the index of these vocabularies to this project
+		// these vocabs have been loaded in the global project with id "g" so just copy the index
+		VocabularyIndexer.singleton.addPredefinedVocabulariesToProject(projectId);
 	}
 	
 	public Map<String, Vocabulary> getPrefixesMap() {
